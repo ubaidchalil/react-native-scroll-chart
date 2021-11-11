@@ -30,3 +30,20 @@ export const getYAxisLabel = (max, min) => {
   }
   return labels;
 };
+
+export const getData = () => {
+  const data = [];
+  for (let i = 0; i < 10; i++) {
+    const data1 = [];
+    if (i > 0) {
+      data1.push({key: i * 35, value: 101, day: 'Sun'});
+    }
+    for (let j = 0; j < 35; j++) {
+      data1.push({key: i * 35 + j + 1, value: 101, day: 'Sun'});
+    }
+
+    data.push(data1);
+  }
+
+  return data;
+};

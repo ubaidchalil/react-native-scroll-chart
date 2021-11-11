@@ -15,7 +15,7 @@ import Chart from './ChartData';
 import YAxis from './YAxis';
 import {getMaxAndMin, getYAxisLabel} from './utils';
 
-const ITEM_LENGTH_IN_SECTION = 21;
+const ITEM_LENGTH_IN_SECTION = 14;
 
 const LineChart = ({chartData, containerHeight, dataCount}) => {
   const [xVal, setXVal] = useState(COLUMNS);
@@ -166,15 +166,14 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
     },
     onEnd: event => {
       let next = 0;
-
-      if (Math.abs(event.velocityX) > 9300) {
-        next = ITEM_WIDTH * COLUMNS * 4;
+      if (Math.abs(event.velocityX) > 11000) {
+        next = ITEM_WIDTH * (COLUMNS - 1) * 2;
       } else if (Math.abs(event.velocityX) > 6200) {
-        next = ITEM_WIDTH * COLUMNS * 3;
+        next = ITEM_WIDTH * (COLUMNS - 1) * 2;
       } else if (Math.abs(event.velocityX) > 3100) {
-        next = ITEM_WIDTH * COLUMNS * 2;
+        next = ITEM_WIDTH * (COLUMNS - 1) * 2;
       } else if (Math.abs(event.velocityX) > 900) {
-        next = ITEM_WIDTH * COLUMNS * 1;
+        next = ITEM_WIDTH * (COLUMNS - 1) * 1;
       } else {
         const transX = Math.abs(event.translationX);
         const HALF_WIDTH = ITEM_WIDTH / 2;

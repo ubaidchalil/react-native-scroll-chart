@@ -21,7 +21,7 @@ const getDPath = ({chartHeight, chartData, extrema}) => {
   }
 
   const dPath = chartData.reduce((path, data, index) => {
-    const x = index * ITEM_WIDTH + MARGIN_FROM_RIGHT;
+    const x = index * ITEM_WIDTH + MARGIN_FROM_RIGHT + ITEM_WIDTH / 2;
     const y =
       MARGIN_FROM_TOP +
       chartHeight -
@@ -37,7 +37,7 @@ const getDPath = ({chartHeight, chartData, extrema}) => {
 const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
   const xAxisX1Point = MARGIN_FROM_RIGHT;
   const xAxisY1Point = containerHeight - MARGIN_FROM_BOTTOM;
-  const xAxisX2Point = xAxisX1Point + ITEM_WIDTH * (chartData.length - 1);
+  const xAxisX2Point = xAxisX1Point + ITEM_WIDTH * chartData.length;
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
@@ -64,7 +64,12 @@ const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
               chartHeight;
       return (
         <G key={`data-section-${index}`}>
-          <Circle cx={dataXPoint} cy={dataYPoint} fill="#000" r="3" />
+          <Circle
+            cx={dataXPoint + ITEM_WIDTH / 2}
+            cy={dataYPoint}
+            fill="#000"
+            r="3"
+          />
           <Rect
             x={xPoint - 5}
             y={xAxisY1Point}
@@ -84,7 +89,7 @@ const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
 
           <SvgText
             transform="scale(-1,1)"
-            x={-xPoint}
+            x={-(xPoint + ITEM_WIDTH / 2)}
             y={xAxisY1Point + 20}
             textAnchor="middle"
             fill="#000">
@@ -111,7 +116,7 @@ const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
   };
   return (
     <Svg
-      width={xAxisX1Point + ITEM_WIDTH * (chartData.length - 1)}
+      width={xAxisX1Point + ITEM_WIDTH * chartData.length}
       style={[styles.svgContainer, {left}]}>
       <G>
         {renderLineChart()}
