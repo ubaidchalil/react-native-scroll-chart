@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {StyleSheet} from 'react-native';
 import Svg, {
   G,
@@ -15,7 +15,7 @@ import {
   ITEM_WIDTH,
 } from './constants';
 
-const getDPath = ({chartHeight, chartData, extrema}) => {
+const getDPath = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
   if (extrema.max === 0) {
     return '';
   }
@@ -26,6 +26,26 @@ const getDPath = ({chartHeight, chartData, extrema}) => {
       MARGIN_FROM_TOP +
       chartHeight -
       ((data.value - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
+    if (index === 0 && lastValue) {
+      const lastX = -(MARGIN_FROM_RIGHT + ITEM_WIDTH / 2);
+      const lastY =
+        MARGIN_FROM_TOP +
+        chartHeight -
+        ((lastValue - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
+      path += `M${lastX} ${lastY}L${x} ${y}`;
+      return path;
+    }
+
+    if (index === chartData.length - 1 && nextValue) {
+      const nextX =
+        (index + 1) * ITEM_WIDTH + MARGIN_FROM_RIGHT + ITEM_WIDTH / 2;
+      const nextY =
+        MARGIN_FROM_TOP +
+        chartHeight -
+        ((nextValue - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
+      path += `L${x} ${y}L${nextX} ${nextY}`;
+      return path;
+    }
 
     const prefix = index === 0 ? 'M' : 'L';
     path += `${prefix}${x} ${y}`;
@@ -34,21 +54,36 @@ const getDPath = ({chartHeight, chartData, extrema}) => {
   return dPath;
 };
 
-const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
+const LineChart = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
+  const dPath = useMemo(
+    () =>
+      getDPath({
+        chartHeight,
+        chartData,
+        extrema,
+        lastValue,
+        nextValue,
+      }),
+    [chartHeight, chartData, extrema, lastValue, nextValue],
+  );
+  return <Path d={dPath} stroke="#000" strokeWidth={1} fill="none" />;
+};
+
+const Chart = ({
+  containerHeight,
+  chartData,
+  extrema,
+  left = 0,
+  lastValue,
+  backgroundColor,
+  nextValue,
+}) => {
   const xAxisX1Point = MARGIN_FROM_RIGHT;
   const xAxisY1Point = containerHeight - MARGIN_FROM_BOTTOM;
   const xAxisX2Point = xAxisX1Point + ITEM_WIDTH * chartData.length;
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
-  const renderLineChart = () => {
-    const dPath = getDPath({
-      chartHeight,
-      chartData,
-      extrema,
-    });
-    return <Path d={dPath} stroke="#000" strokeWidth={1} fill="none" />;
-  };
   const renderLineChartData = () => {
     return chartData.map((item, index) => {
       const xPoint = xAxisX1Point + ITEM_WIDTH * index;
@@ -74,7 +109,7 @@ const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
             x={xPoint - 5}
             y={xAxisY1Point}
             width={ITEM_WIDTH + 10}
-            height={30}
+            height={50}
             fill="#fff"
           />
           <Line
@@ -119,7 +154,9 @@ const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
       width={xAxisX1Point + ITEM_WIDTH * chartData.length}
       style={[styles.svgContainer, {left}]}>
       <G>
-        {renderLineChart()}
+        <LineChart
+          {...{chartHeight, chartData, extrema, lastValue, nextValue}}
+        />
 
         {renderLineChartData()}
         {renderXAxis()}
@@ -130,7 +167,7 @@ const Chart = ({containerHeight, chartData, extrema, left = 0}) => {
 
 const styles = StyleSheet.create({
   svgContainer: {
-    height: 300,
+    height: 250,
     zIndex: 6,
     backgroundColor: '#fff',
 

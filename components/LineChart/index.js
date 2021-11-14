@@ -13,24 +13,41 @@ import Animated, {
 import {COLUMNS, ITEM_WIDTH} from './constants';
 import Chart from './ChartData';
 import YAxis from './YAxis';
-import {getMaxAndMin, getYAxisLabel} from './utils';
+import {getMaxAndMin, getMaxAndMin1, getYAxisLabel} from './utils';
 
-const ITEM_LENGTH_IN_SECTION = 14;
+const ITEM_LENGTH_IN_SECTION = 35;
 
 const LineChart = ({chartData, containerHeight, dataCount}) => {
-  const [xVal, setXVal] = useState(COLUMNS);
+  const [xVal, setXVal] = useState(null);
   const [extrema, setExtrema] = useState({min: 0, max: 0});
-  const [chartState, setChartState] = React.useState({
-    navigationMode: 'NEXT',
-    section: 1,
-  });
-  const [page, setPage] = React.useState(1);
-  const [pageNo, setPageNo] = React.useState(1);
+  const [chartState, setChartState] = React.useState(null);
+  const [page, setPage] = React.useState(null);
   const [chartDataState, setChartDataState] = React.useState({
-    section1: {data: chartData[0], left: 0},
-    section2: {data: [], left: 0},
-    section3: {data: [], left: 0},
+    section1: {data: [], left: 0, lastValue: null},
+    section2: {data: [], left: 0, lastValue: null},
+    section3: {data: [], left: 0, lastValue: null},
   });
+
+  useEffect(() => {
+    if (chartData.length > 0) {
+      setChartDataState({
+        ...chartDataState,
+        section1: {data: chartData[0], left: 0, lastValue: null},
+      });
+
+      if (!chartState) {
+        setChartState({
+          navigationMode: 'NEXT',
+          section: 1,
+        });
+      }
+      if (!xVal) {
+        setXVal(COLUMNS - 1);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartData]);
+
   const [yAxisLabelArray, setYAxisLabelArray] = useState([]);
 
   const translateX = useSharedValue(0);
@@ -39,10 +56,15 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
   const animationEnd = useSharedValue(0);
   const pageNoAnimateState = useSharedValue(1);
 
-  const MAX_TRANSLATE_X =
-    -ITEM_WIDTH * (chartState.section + 1) * (ITEM_LENGTH_IN_SECTION - 1);
+  const MAX_TRANSLATE_X = -(ITEM_WIDTH * dataCount);
 
   useEffect(() => {
+    if (!chartState) {
+      return;
+    }
+    if (chartState.section >= Math.ceil(dataCount / 35)) {
+      return;
+    }
     const diff = chartState.navigationMode === 'NEXT' ? 1 : -1;
     const nextSection =
       chartState.navigationMode === 'PREV' && chartState.section === 1
@@ -61,36 +83,46 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
       left = left + ITEM_WIDTH * (nextSection - 2);
     }
 
-    const data =
-      chartData[
-        chartState.navigationMode === 'NEXT'
-          ? chartState.section
-          : nextSection - 1
-      ];
+    const index =
+      chartState.navigationMode === 'NEXT'
+        ? chartState.section
+        : nextSection - 1;
+
+    const data = chartData[index];
+
+    const lastValue = chartData[index - 1]
+      ? chartData[index - 1][chartData[index - 1].length - 2].value
+      : null;
 
     if (mod === 1) {
       setChartDataState({
         ...chartDataState,
-        section1: {data: data, left: left},
+        section1: {data: data, left: left, lastValue},
       });
     } else if (mod === 2) {
       setChartDataState({
         ...chartDataState,
-        section2: {data: data, left: left},
+        section2: {data: data, left: left, lastValue},
       });
     } else {
+      const nextValue = chartData[index + 1]
+        ? chartData[index + 1][1].value
+        : null;
       setChartDataState({
         ...chartDataState,
-        section3: {data: data, left: left},
+        section3: {data: data, left: left, lastValue, nextValue},
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartState]);
 
   useEffect(() => {
-    const minMax = getMaxAndMin({
-      dataArray: chartData[0],
-      currIndex: 7,
+    if (!xVal) {
+      return;
+    }
+    const minMax = getMaxAndMin1({
+      dataList: chartData,
+      currIndex: xVal,
       diff: 5,
     });
     const [min, max] = minMax;
@@ -98,7 +130,7 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [xVal, chartData]);
 
   useEffect(() => {
     const limit = page * dataCount - dataCount + 1;
@@ -132,13 +164,24 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
       }
 
       if (
+        Math.abs(MAX_TRANSLATE_X) - ITEM_WIDTH / 2 <
+        clampedTranslateX.value + ITEM_WIDTH * 7
+      ) {
+        runOnJS(setXVal)(Math.round(data + COLUMNS - 1));
+      }
+
+      if (ITEM_WIDTH / 2 > clampedTranslateX.value) {
+        runOnJS(setXVal)(Math.round(data + COLUMNS - 1));
+      }
+
+      if (
         animationEnd.value === 1 ||
         (Math.round(Math.abs(MAX_TRANSLATE_X) / ITEM_WIDTH) <
           Math.round(data) + 49 &&
           check.value === 0)
       ) {
         check.value = 1;
-        runOnJS(setXVal)(Math.round(data + COLUMNS));
+        runOnJS(setXVal)(Math.round(data + COLUMNS - 1));
       }
 
       if (animationEnd.value === 1) {
@@ -165,15 +208,26 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
       translateX.value = event.translationX + context.x;
     },
     onEnd: event => {
+      const endValue =
+        valueAnimationEnd.value < 0
+          ? 0
+          : valueAnimationEnd.value > Math.abs(MAX_TRANSLATE_X)
+          ? Math.abs(MAX_TRANSLATE_X)
+          : valueAnimationEnd.value;
+
       let next = 0;
-      if (Math.abs(event.velocityX) > 11000) {
-        next = ITEM_WIDTH * (COLUMNS - 1) * 2;
-      } else if (Math.abs(event.velocityX) > 6200) {
-        next = ITEM_WIDTH * (COLUMNS - 1) * 2;
-      } else if (Math.abs(event.velocityX) > 3100) {
-        next = ITEM_WIDTH * (COLUMNS - 1) * 2;
-      } else if (Math.abs(event.velocityX) > 900) {
-        next = ITEM_WIDTH * (COLUMNS - 1) * 1;
+      if (Math.abs(event.velocityX) > 900) {
+        let diff =
+          (endValue + ITEM_WIDTH * (COLUMNS - 1)) %
+          (ITEM_WIDTH * (COLUMNS - 1));
+
+        if (event.velocityX < 0) {
+          diff = diff === 0 ? 0 : ITEM_WIDTH * (COLUMNS - 1) - diff;
+        }
+        if (diff >= ITEM_WIDTH * (COLUMNS - 1) - 5) {
+          diff = 0;
+        }
+        next = ITEM_WIDTH * (COLUMNS - 1) - diff;
       } else {
         const transX = Math.abs(event.translationX);
         const HALF_WIDTH = ITEM_WIDTH / 2;
@@ -187,13 +241,8 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
         next = -next;
       }
 
-      const endValue =
-        valueAnimationEnd.value < 0
-          ? 0
-          : valueAnimationEnd.value > Math.abs(MAX_TRANSLATE_X)
-          ? Math.abs(MAX_TRANSLATE_X)
-          : valueAnimationEnd.value;
       valueAnimationEnd.value = endValue + next;
+
       translateX.value = withSpring(
         valueAnimationEnd.value,
         {damping: 50},
@@ -221,7 +270,7 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
           <PanGestureHandler onGestureEvent={panGestureEvent}>
             <Animated.View>
               <Animated.View
-                style={[{flexDirection: 'row', height: 300}, rStyle]}>
+                style={[{flexDirection: 'row', height: 250}, rStyle]}>
                 {chartDataState.section1.data.length > 0 && (
                   <Chart
                     {...{
@@ -229,6 +278,9 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
                       chartData: chartDataState.section1.data,
                       left: chartDataState.section1.left,
                       extrema,
+                      lastValue: chartDataState.section1.lastValue,
+                      nextValue: chartDataState.section3.nextValue,
+                      backgroundColor: 'red',
                     }}
                   />
                 )}
@@ -240,6 +292,9 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
                       chartData: chartDataState.section2.data,
                       left: chartDataState.section2.left,
                       extrema,
+                      lastValue: chartDataState.section2.lastValue,
+                      nextValue: chartDataState.section3.nextValue,
+                      backgroundColor: 'green',
                     }}
                   />
                 )}
@@ -251,6 +306,9 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
                       chartData: chartDataState.section3.data,
                       left: chartDataState.section3.left,
                       extrema,
+                      lastValue: chartDataState.section3.lastValue,
+                      nextValue: chartDataState.section3.nextValue,
+                      backgroundColor: 'yellow',
                     }}
                   />
                 )}
@@ -266,8 +324,8 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
           backgroundColor: 'green',
         }}>
         <Text>{xVal}</Text>
-        <Text>{chartState.navigationMode}</Text>
-        <Text>{chartState.section}</Text>
+        <Text>{chartState?.navigationMode}</Text>
+        <Text>{chartState?.section}</Text>
       </View>
     </>
   );

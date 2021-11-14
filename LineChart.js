@@ -57,10 +57,13 @@ const itemWidth =
 export default function LineChart() {
   const [extrema, setExtrema] = useState({min: 0, max: 0});
   const [chartData, setChartData] = useState(DATA);
-  const [page, setPage] = useState(7);
+  const [page, setPage] = useState(null);
   const [yAxisLabelArray, setYAxisLabelArray] = useState([]);
 
   useEffect(() => {
+    if (!page) {
+      return;
+    }
     const minMax = getMaxAndMin({
       dataArray: chartData,
       currIndex: page,
@@ -163,7 +166,6 @@ export default function LineChart() {
 
   const renderLineChart = () => {
     const dPath = getDPath();
-    console.log({dPath});
     return <Path d={dPath} stroke="#fff" strokeWidth={2} fill="none" />;
   };
 
