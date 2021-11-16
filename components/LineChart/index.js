@@ -14,6 +14,7 @@ import {MARGIN_FROM_LEFT, MARGIN_FROM_RIGHT, width} from './constants';
 import Chart from './ChartData';
 import YAxis from './YAxis';
 import {getMaxAndMin, getYAxisLabel} from './utils';
+import Tooltip from './Tooltip';
 
 const ITEM_LENGTH_IN_SECTION = 35;
 
@@ -26,6 +27,8 @@ const LineChart = ({
   const [displayedColumns, setDisplayedColumns] = useState(null);
   const [extrema, setExtrema] = useState({min: 0, max: 0});
   const [chartState, setChartState] = React.useState(null);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+
   const [chartDataState, setChartDataState] = React.useState({
     section1: {data: [], left: 0, lastValue: null},
     section2: {data: [], left: 0, lastValue: null},
@@ -265,6 +268,7 @@ const LineChart = ({
             containerHeight,
           }}
         />
+
         <View style={styles.panGestureContainer}>
           <PanGestureHandler onGestureEvent={panGestureEvent}>
             <Animated.View>

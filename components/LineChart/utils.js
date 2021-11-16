@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const getMaxAndMin = ({
   dataList,
   currIndex,
@@ -67,3 +69,47 @@ export const getData = () => {
 
   return data;
 };
+
+export const getData2 = () => {
+  console.log({end: dayjs().endOf('weeks').add(1, 'day')});
+
+  // const data = [];
+  // for (let i = 0; i < 40; i++) {
+  //   const data1 = [];
+  //   if (i > 0) {
+  //     data1.push({key: i * 35, value: 101, day: 'Sun'});
+  //   }
+  //   for (let j = 0; j < 35; j++) {
+  //     data1.push({
+  //       key: i * 35 + j + 1,
+  //       value: Math.floor(Math.random() * 100) + 100,
+  //       day: 'Sun',
+  //     });
+  //   }
+
+  //   data.push(data1);
+  // }
+};
+
+// weekly | monthly;
+
+const lastEnrty = '2021-11-30';
+
+const weekendDate = '2021-12-05';
+
+const monthly = [
+  {
+    startDate: '2021-11-29',
+    endDate: '2021-12-05',
+    value: 0,
+    previousValue: null,
+    label: '11/29-12/5',
+  },
+  {
+    startDate: '2021-11-29',
+    endDate: '2021-12-05',
+    value: 210,
+    previousValue: 0,
+    label: '11/29-12/5',
+  },
+];

@@ -8,6 +8,7 @@ import {
 } from './constants';
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
+import Tooltip from './Tooltip';
 
 const getDPath = ({
   chartHeight,
@@ -85,18 +86,41 @@ const Chart = ({
   lastValue,
   nextValue,
   itemWidth,
+  isTooltipVisible,
 }) => {
+  const [tooltipState, setTooltipState] = React.useState({
+    isVisible: false,
+    xPosition: 0,
+    yPosition: 0,
+    selectedIndex: -1,
+  });
   const xAxisX1Point = MARGIN_FROM_RIGHT;
   const xAxisY1Point = containerHeight - MARGIN_FROM_BOTTOM;
   const xAxisX2Point = xAxisX1Point + itemWidth * chartData.length;
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
+  const onCircle = ({xPosition, yPosition}) => {
+    setTooltipState({xPosition, yPosition, isVisible: true});
+  };
+
+  React.useEffect(() => {
+    setTooltipState({...tooltipState, isVisible: false});
+  }, [extrema]);
+
   return (
     <Svg
       width={xAxisX1Point + itemWidth * chartData.length}
-      style={[styles.svgContainer, {left}]}>
+      style={[styles.svgContainer(containerHeight), {left}]}>
       <G>
+        {tooltipState.isVisible && (
+          <Tooltip
+            xPosition={tooltipState.xPosition}
+            yPosition={tooltipState.yPosition}
+            containerHeight={containerHeight}
+            itemWidth={itemWidth}
+          />
+        )}
         <LineChart
           {...{
             chartHeight,
@@ -116,6 +140,7 @@ const Chart = ({
             chartHeight,
             xAxisY1Point,
             itemWidth,
+            onCircle,
           }}
         />
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
@@ -125,12 +150,12 @@ const Chart = ({
 };
 
 const styles = StyleSheet.create({
-  svgContainer: {
-    height: 250,
+  svgContainer: height => ({
+    height,
     zIndex: 6,
     backgroundColor: '#fff',
     position: 'absolute',
-  },
+  }),
 });
 
 export default Chart;

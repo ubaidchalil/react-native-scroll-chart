@@ -3,7 +3,7 @@ import {Dimensions} from 'react-native';
 const {width} = Dimensions.get('window');
 
 const MARGIN_FROM_LEFT = 50;
-const MARGIN_FROM_TOP = 20;
+const MARGIN_FROM_TOP = 50;
 const MARGIN_FROM_RIGHT = 0;
 const MARGIN_FROM_BOTTOM = 35;
 

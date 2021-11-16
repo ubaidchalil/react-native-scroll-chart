@@ -9,6 +9,7 @@ const ChartElements = ({
   chartHeight,
   xAxisY1Point,
   itemWidth,
+  onCircle,
 }) => {
   return chartData.map((item, index) => {
     const xPoint = xAxisX1Point + itemWidth * index;
@@ -27,9 +28,27 @@ const ChartElements = ({
         <Circle
           cx={dataXPoint + itemWidth / 2}
           cy={dataYPoint}
-          fill="#000"
-          r="3"
+          r="10"
+          onPress={() =>
+            onCircle({
+              xPosition: dataXPoint + itemWidth / 2,
+              yPosition: dataYPoint,
+            })
+          }
         />
+        <Circle
+          cx={dataXPoint + itemWidth / 2}
+          cy={dataYPoint}
+          fill="#000"
+          r="3.5"
+          onPress={() =>
+            onCircle({
+              xPosition: dataXPoint + itemWidth / 2,
+              yPosition: dataYPoint,
+            })
+          }
+        />
+
         <Rect
           x={xPoint - 5}
           y={xAxisY1Point}
