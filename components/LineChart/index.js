@@ -23,10 +23,9 @@ const LineChart = ({
   dataCount,
   chartColumns = 4,
 }) => {
-  const [xVal, setXVal] = useState(null);
+  const [displayedColumns, setDisplayedColumns] = useState(null);
   const [extrema, setExtrema] = useState({min: 0, max: 0});
   const [chartState, setChartState] = React.useState(null);
-  const [page, setPage] = React.useState(null);
   const [chartDataState, setChartDataState] = React.useState({
     section1: {data: [], left: 0, lastValue: null},
     section2: {data: [], left: 0, lastValue: null},
@@ -49,8 +48,8 @@ const LineChart = ({
           section: 1,
         });
       }
-      if (!xVal) {
-        setXVal(chartColumns);
+      if (!displayedColumns) {
+        setDisplayedColumns(chartColumns);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,12 +124,12 @@ const LineChart = ({
   }, [chartState]);
 
   useEffect(() => {
-    if (!xVal) {
+    if (!displayedColumns) {
       return;
     }
     const minMax = getMaxAndMin({
       dataList: chartData,
-      currIndex: xVal,
+      currIndex: displayedColumns,
       diff: 5,
       chartColumns,
     });
@@ -139,15 +138,7 @@ const LineChart = ({
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [xVal, chartData]);
-
-  useEffect(() => {
-    const limit = page * dataCount - dataCount + 1;
-    if (Math.abs(xVal) > limit) {
-      setPage((page * dataCount) / dataCount + 1);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [xVal]);
+  }, [displayedColumns, chartData]);
 
   const clampedTranslateX = useDerivedValue(() => {
     return Math.max(
@@ -176,11 +167,11 @@ const LineChart = ({
         Math.abs(MAX_TRANSLATE_X) - itemWidth / 2 <
         clampedTranslateX.value + itemWidth * 7
       ) {
-        runOnJS(setXVal)(Math.round(data + chartColumns));
+        runOnJS(setDisplayedColumns)(Math.round(data + chartColumns));
       }
 
       if (itemWidth / 2 > clampedTranslateX.value) {
-        runOnJS(setXVal)(Math.round(data + chartColumns));
+        runOnJS(setDisplayedColumns)(Math.round(data + chartColumns));
       }
 
       if (
@@ -190,7 +181,7 @@ const LineChart = ({
           check.value === 0)
       ) {
         check.value = 1;
-        runOnJS(setXVal)(Math.round(data + chartColumns));
+        runOnJS(setDisplayedColumns)(Math.round(data + chartColumns));
       }
 
       if (animationEnd.value === 1) {
