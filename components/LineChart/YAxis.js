@@ -65,7 +65,7 @@ const YAxis = ({yAxisLabelArray, containerHeight}) => {
   );
 };
 
-export default YAxis;
+export default React.memo(YAxis);
 
 const styles = StyleSheet.create({
   svgContainer: {

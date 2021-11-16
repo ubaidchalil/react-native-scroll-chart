@@ -29,12 +29,11 @@ const DATA = Array.from({length: 21}, (_, i) => {
 
 export default function ScrollableLineChart() {
   const [chartData, setChartData] = React.useState([]);
-  const [dataCount, setDataCount] = React.useState(175);
+  const [dataCount, setDataCount] = React.useState(1400);
 
   useEffect(() => {
-    // const data = getData();
-    // console.log('data', {data});
-    setChartData(data1);
+    const data = getData();
+    setChartData(data);
   }, []);
 
   return (

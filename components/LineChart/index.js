@@ -266,11 +266,11 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
             containerHeight,
           }}
         />
-        <View style={{marginLeft: 51, overflow: 'hidden'}}>
+        <View style={styles.panGestureContainer}>
           <PanGestureHandler onGestureEvent={panGestureEvent}>
             <Animated.View>
               <Animated.View
-                style={[{flexDirection: 'row', height: 250}, rStyle]}>
+                style={[styles.chartContainer(containerHeight), rStyle]}>
                 {chartDataState.section1.data.length > 0 && (
                   <Chart
                     {...{
@@ -317,16 +317,6 @@ const LineChart = ({chartData, containerHeight, dataCount}) => {
           </PanGestureHandler>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          backgroundColor: 'green',
-        }}>
-        <Text>{xVal}</Text>
-        <Text>{chartState?.navigationMode}</Text>
-        <Text>{chartState?.section}</Text>
-      </View>
     </>
   );
 };
@@ -337,4 +327,6 @@ const styles = StyleSheet.create({
   svgWrapper: {
     backgroundColor: '#fff',
   },
+  panGestureContainer: {marginLeft: 51, overflow: 'hidden'},
+  chartContainer: height => ({flexDirection: 'row', height}),
 });

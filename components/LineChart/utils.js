@@ -71,7 +71,7 @@ export const getYAxisLabel = (max, min) => {
 
 export const getData = () => {
   const data = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 40; i++) {
     const data1 = [];
     if (i > 0) {
       data1.push({key: i * 35, value: 101, day: 'Sun'});
