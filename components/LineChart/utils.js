@@ -1,37 +1,15 @@
 export const getMaxAndMin = ({
-  dataArray,
-  prevMin,
-  prevMax,
-  currIndex,
-  diff = 10,
-}) => {
-  let min = dataArray[currIndex - 7].value;
-  let max = dataArray[currIndex - 7].value;
-
-  for (let i = currIndex - 7; i < currIndex; i++) {
-    if (dataArray[i].value < min) {
-      min = dataArray[i].value;
-    }
-    if (dataArray[i].value > max) {
-      max = dataArray[i].value;
-    }
-  }
-  min = min - diff < 0 ? 0 : min - diff;
-  max = max + diff + 1;
-  return [min, max];
-};
-
-export const getMaxAndMin1 = ({
   dataList,
   currIndex,
   diff = 10,
   prevMin = 0,
   prevMax = 0,
+  chartColumns = 7,
 }) => {
   let min = 100;
   let max = 100;
 
-  for (let i = currIndex - 7; i < currIndex; i++) {
+  for (let i = currIndex - chartColumns; i < currIndex; i++) {
     const dataArrayIndex = Math.ceil((i + 1) / 35);
     let dataIndex = (i + 1) % 35;
     dataIndex = dataIndex === 0 ? 35 : dataIndex;

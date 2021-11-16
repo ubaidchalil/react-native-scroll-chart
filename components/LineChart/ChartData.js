@@ -5,24 +5,30 @@ import {
   MARGIN_FROM_TOP,
   MARGIN_FROM_RIGHT,
   MARGIN_FROM_BOTTOM,
-  ITEM_WIDTH,
 } from './constants';
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
 
-const getDPath = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
+const getDPath = ({
+  chartHeight,
+  chartData,
+  extrema,
+  lastValue,
+  nextValue,
+  itemWidth,
+}) => {
   if (extrema.max === 0) {
     return '';
   }
 
   const dPath = chartData.reduce((path, data, index) => {
-    const x = index * ITEM_WIDTH + MARGIN_FROM_RIGHT + ITEM_WIDTH / 2;
+    const x = index * itemWidth + MARGIN_FROM_RIGHT + itemWidth / 2;
     const y =
       MARGIN_FROM_TOP +
       chartHeight -
       ((data.value - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
     if (index === 0 && lastValue) {
-      const lastX = -(MARGIN_FROM_RIGHT + ITEM_WIDTH / 2);
+      const lastX = -(MARGIN_FROM_RIGHT + itemWidth / 2);
       const lastY =
         MARGIN_FROM_TOP +
         chartHeight -
@@ -32,8 +38,7 @@ const getDPath = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
     }
 
     if (index === chartData.length - 1 && nextValue) {
-      const nextX =
-        (index + 1) * ITEM_WIDTH + MARGIN_FROM_RIGHT + ITEM_WIDTH / 2;
+      const nextX = (index + 1) * itemWidth + MARGIN_FROM_RIGHT + itemWidth / 2;
       const nextY =
         MARGIN_FROM_TOP +
         chartHeight -
@@ -49,7 +54,14 @@ const getDPath = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
   return dPath;
 };
 
-const LineChart = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
+const LineChart = ({
+  chartHeight,
+  chartData,
+  extrema,
+  lastValue,
+  nextValue,
+  itemWidth,
+}) => {
   const dPath = useMemo(
     () =>
       getDPath({
@@ -58,8 +70,9 @@ const LineChart = ({chartHeight, chartData, extrema, lastValue, nextValue}) => {
         extrema,
         lastValue,
         nextValue,
+        itemWidth,
       }),
-    [chartHeight, chartData, extrema, lastValue, nextValue],
+    [chartHeight, chartData, extrema, lastValue, nextValue, itemWidth],
   );
   return <Path d={dPath} stroke="#000" strokeWidth={1} fill="none" />;
 };
@@ -71,24 +84,39 @@ const Chart = ({
   left = 0,
   lastValue,
   nextValue,
+  itemWidth,
 }) => {
   const xAxisX1Point = MARGIN_FROM_RIGHT;
   const xAxisY1Point = containerHeight - MARGIN_FROM_BOTTOM;
-  const xAxisX2Point = xAxisX1Point + ITEM_WIDTH * chartData.length;
+  const xAxisX2Point = xAxisX1Point + itemWidth * chartData.length;
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
   return (
     <Svg
-      width={xAxisX1Point + ITEM_WIDTH * chartData.length}
+      width={xAxisX1Point + itemWidth * chartData.length}
       style={[styles.svgContainer, {left}]}>
       <G>
         <LineChart
-          {...{chartHeight, chartData, extrema, lastValue, nextValue}}
+          {...{
+            chartHeight,
+            chartData,
+            extrema,
+            lastValue,
+            nextValue,
+            itemWidth,
+          }}
         />
 
         <ChartElements
-          {...{extrema, chartData, xAxisX1Point, chartHeight, xAxisY1Point}}
+          {...{
+            extrema,
+            chartData,
+            xAxisX1Point,
+            chartHeight,
+            xAxisY1Point,
+            itemWidth,
+          }}
         />
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
       </G>
