@@ -28,7 +28,8 @@ const ChartElements = ({
         <Circle
           cx={dataXPoint + itemWidth / 2}
           cy={dataYPoint}
-          r="10"
+          fill="#000"
+          r="3.5"
           onPress={() =>
             onCircle({
               xPosition: dataXPoint + itemWidth / 2,
@@ -39,8 +40,7 @@ const ChartElements = ({
         <Circle
           cx={dataXPoint + itemWidth / 2}
           cy={dataYPoint}
-          fill="#000"
-          r="3.5"
+          r="25"
           onPress={() =>
             onCircle({
               xPosition: dataXPoint + itemWidth / 2,
@@ -48,7 +48,6 @@ const ChartElements = ({
             })
           }
         />
-
         <Rect
           x={xPoint - 5}
           y={xAxisY1Point}
