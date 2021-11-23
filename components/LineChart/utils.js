@@ -17,13 +17,13 @@ export const getMaxAndMin = ({
     dataIndex = dataIndex === 0 ? 35 : dataIndex;
     dataIndex = dataArrayIndex > 1 ? dataIndex + 1 : dataIndex;
 
-    const value = dataList[dataArrayIndex - 1][dataIndex - 1].value;
+    const value = dataList[dataArrayIndex - 1][dataIndex - 1]?.value;
 
     if (value < min) {
-      min = value;
+      min = value || 0;
     }
     if (value > max) {
-      max = value;
+      max = value || 0;
     }
   }
 
@@ -70,25 +70,21 @@ export const getData = () => {
   return data;
 };
 
-export const getData2 = () => {
-  console.log({end: dayjs().endOf('weeks').add(1, 'day')});
+export const getData2 = (dataArr, currentIndex = 0) => {
+  const data = [];
 
-  // const data = [];
-  // for (let i = 0; i < 40; i++) {
-  //   const data1 = [];
-  //   if (i > 0) {
-  //     data1.push({key: i * 35, value: 101, day: 'Sun'});
-  //   }
-  //   for (let j = 0; j < 35; j++) {
-  //     data1.push({
-  //       key: i * 35 + j + 1,
-  //       value: Math.floor(Math.random() * 100) + 100,
-  //       day: 'Sun',
-  //     });
-  //   }
+  const length = dataArr.length;
 
-  //   data.push(data1);
-  // }
+  const sectionCount = Math.ceil(length / 35);
+  for (let i = 0 + currentIndex; i < sectionCount; i++) {
+    const endPositionDiff = i > 0 ? 36 : 35;
+    const startPositionDiff = i > 0 ? 1 : 0;
+    const startPosition = i * 35 - startPositionDiff;
+    let endPosition = i * 35 + endPositionDiff;
+    endPosition = i === sectionCount - 1 ? length : endPosition;
+    data.push(dataArr.slice(startPosition, endPosition));
+  }
+  return data;
 };
 
 // weekly | monthly;

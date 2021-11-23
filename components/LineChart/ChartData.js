@@ -86,7 +86,9 @@ const Chart = ({
   lastValue,
   nextValue,
   itemWidth,
-  isTooltipVisible,
+  tooltipDisplayed,
+  setTooltipDisplayed,
+  chartKey,
 }) => {
   const [tooltipState, setTooltipState] = React.useState({
     isVisible: false,
@@ -101,11 +103,20 @@ const Chart = ({
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
   const onCircle = ({xPosition, yPosition}) => {
+    setTooltipDisplayed(chartKey);
     setTooltipState({xPosition, yPosition, isVisible: true});
   };
 
   React.useEffect(() => {
+    if (tooltipDisplayed !== chartKey) {
+      setTooltipState({isVisible: false});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tooltipDisplayed]);
+
+  React.useEffect(() => {
     setTooltipState({...tooltipState, isVisible: false});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extrema]);
 
   return (

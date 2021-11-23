@@ -71,7 +71,7 @@ const ChartElements = ({
           y={xAxisY1Point + 20}
           textAnchor="middle"
           fill="#000">
-          {item.key}
+          {item.label}
         </SvgText>
       </G>
     );

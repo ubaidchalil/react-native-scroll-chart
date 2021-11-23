@@ -23,7 +23,7 @@ const LineChart = ({
   chartData,
   containerHeight,
   dataCount,
-  chartColumns = 7,
+  chartColumns = 4,
 }) => {
   const [displayedColumns, setDisplayedColumns] = useState(null);
   const [extrema, setExtrema] = useState({min: 0, max: 0});
@@ -102,7 +102,7 @@ const LineChart = ({
     const data = chartData[index];
 
     const lastValue = chartData[index - 1]
-      ? chartData[index - 1][chartData[index - 1].length - 2]?.value
+      ? chartData[index - 1][chartData[index - 1].length - 2].value
       : null;
 
     if (mod === 1) {
@@ -295,57 +295,6 @@ const LineChart = ({
                       />
                     ),
                 )}
-
-                {/* {chartDataState.chart1.data.length > 0 && (
-                  <Chart
-                    {...{
-                      containerHeight,
-                      chartData: chartDataState.chart1.data,
-                      left: chartDataState.chart1.left,
-                      extrema,
-                      lastValue: chartDataState.chart1.lastValue,
-                      nextValue: chartDataState.chart3.nextValue,
-                      itemWidth,
-                      tooltipDisplayed,
-                      setTooltipDisplayed,
-                      chartKey: 'chart1',
-                    }}
-                  />
-                )}
-
-                {chartDataState.chart2.data.length > 0 && (
-                  <Chart
-                    {...{
-                      containerHeight,
-                      chartData: chartDataState.chart2.data,
-                      left: chartDataState.chart2.left,
-                      extrema,
-                      lastValue: chartDataState.chart2.lastValue,
-                      nextValue: chartDataState.chart3.nextValue,
-                      itemWidth,
-                      tooltipDisplayed,
-                      setTooltipDisplayed,
-                      chartKey: 'chart2',
-                    }}
-                  />
-                )}
-
-                {chartDataState.chart3.data.length > 0 && (
-                  <Chart
-                    {...{
-                      containerHeight,
-                      chartData: chartDataState.chart3.data,
-                      left: chartDataState.chart3.left,
-                      extrema,
-                      lastValue: chartDataState.chart3.lastValue,
-                      nextValue: chartDataState.chart3.nextValue,
-                      itemWidth,
-                      tooltipDisplayed,
-                      setTooltipDisplayed,
-                      chartKey: 'chart3',
-                    }}
-                  />
-                )} */}
               </Animated.View>
             </Animated.View>
           </PanGestureHandler>
