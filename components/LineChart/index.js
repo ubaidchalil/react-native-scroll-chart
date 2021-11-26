@@ -15,7 +15,7 @@ import Chart from './ChartData';
 import YAxis from './YAxis';
 import {getMaxAndMin, getYAxisLabel} from './utils';
 
-const ITEM_LENGTH_IN_SECTION = 35;
+const ITEM_LENGTH_IN_SECTION = 7;
 
 const CHART_SECTIONS = ['chart1', 'chart2', 'chart3'];
 
@@ -31,9 +31,9 @@ const LineChart = ({
   const [tooltipDisplayed, setTooltipDisplayed] = useState(null);
 
   const [chartDataState, setChartDataState] = React.useState({
-    chart1: {data: [], left: 0, lastValue: null},
-    chart2: {data: [], left: 0, lastValue: null},
-    chart3: {data: [], left: 0, lastValue: null},
+    chart1: {data: [], left: 0, lastValue: null, backgroundColor: 'red'},
+    chart2: {data: [], left: 0, lastValue: null, backgroundColor: 'green'},
+    chart3: {data: [], left: 0, lastValue: null, backgroundColor: 'blue'},
   });
 
   const itemWidth =
@@ -43,7 +43,12 @@ const LineChart = ({
     if (chartData.length > 0) {
       setChartDataState({
         ...chartDataState,
-        chart1: {data: chartData[0], left: 0, lastValue: null},
+        chart1: {
+          ...chartDataState.chart1,
+          data: chartData[0],
+          left: 0,
+          lastValue: null,
+        },
       });
 
       if (!chartState) {
@@ -73,7 +78,7 @@ const LineChart = ({
     if (!chartState) {
       return;
     }
-    if (chartState.section >= Math.ceil(dataCount / 35)) {
+    if (chartState.section >= Math.ceil(dataCount / ITEM_LENGTH_IN_SECTION)) {
       return;
     }
     const diff = chartState.navigationMode === 'NEXT' ? 1 : -1;
@@ -90,8 +95,10 @@ const LineChart = ({
       (ITEM_LENGTH_IN_SECTION - 1) *
       itemWidth;
 
+    let diffIndex = nextSection - 1;
     if (nextSection > 2) {
       left = left + itemWidth * (nextSection - 2);
+      diffIndex = nextSection - 2;
     }
 
     const index =
@@ -101,27 +108,38 @@ const LineChart = ({
 
     const data = chartData[index];
 
-    const lastValue = chartData[index - 1]
-      ? chartData[index - 1][chartData[index - 1].length - 2]?.value
-      : null;
-
     if (mod === 1) {
       setChartDataState({
         ...chartDataState,
-        chart1: {data: data, left: left, lastValue},
+        chart1: {
+          ...chartDataState.chart1,
+          data: data,
+          left: left,
+          diffIndex,
+          section: nextSection,
+        },
       });
     } else if (mod === 2) {
       setChartDataState({
         ...chartDataState,
-        chart2: {data: data, left: left, lastValue},
+        chart2: {
+          ...chartDataState.chart2,
+          data: data,
+          left: left,
+          diffIndex,
+          section: nextSection,
+        },
       });
     } else {
-      const nextValue = chartData[index + 1]
-        ? chartData[index + 1][1].value
-        : null;
       setChartDataState({
         ...chartDataState,
-        chart3: {data: data, left: left, lastValue, nextValue},
+        chart3: {
+          ...chartDataState.chart3,
+          data: data,
+          left: left,
+          diffIndex,
+          section: nextSection,
+        },
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -243,7 +261,6 @@ const LineChart = ({
       if (event.velocityX < 0) {
         next = -next;
       }
-
       valueAnimationEnd.value = endValue + next;
 
       translateX.value = withSpring(
@@ -284,68 +301,19 @@ const LineChart = ({
                           chartData: chartDataState?.[section].data,
                           left: chartDataState?.[section].left,
                           extrema,
-                          lastValue: chartDataState?.[section].lastValue,
-                          nextValue: chartDataState.chart3.nextValue,
                           itemWidth,
+                          section: chartDataState?.[section].section,
                           tooltipDisplayed,
                           setTooltipDisplayed,
                           chartKey: [section],
                           key: [section],
+                          diffIndex: chartDataState?.[section].diffIndex,
+                          backgroundColor:
+                            chartDataState?.[section].backgroundColor,
                         }}
                       />
                     ),
                 )}
-
-                {/* {chartDataState.chart1.data.length > 0 && (
-                  <Chart
-                    {...{
-                      containerHeight,
-                      chartData: chartDataState.chart1.data,
-                      left: chartDataState.chart1.left,
-                      extrema,
-                      lastValue: chartDataState.chart1.lastValue,
-                      nextValue: chartDataState.chart3.nextValue,
-                      itemWidth,
-                      tooltipDisplayed,
-                      setTooltipDisplayed,
-                      chartKey: 'chart1',
-                    }}
-                  />
-                )}
-
-                {chartDataState.chart2.data.length > 0 && (
-                  <Chart
-                    {...{
-                      containerHeight,
-                      chartData: chartDataState.chart2.data,
-                      left: chartDataState.chart2.left,
-                      extrema,
-                      lastValue: chartDataState.chart2.lastValue,
-                      nextValue: chartDataState.chart3.nextValue,
-                      itemWidth,
-                      tooltipDisplayed,
-                      setTooltipDisplayed,
-                      chartKey: 'chart2',
-                    }}
-                  />
-                )}
-
-                {chartDataState.chart3.data.length > 0 && (
-                  <Chart
-                    {...{
-                      containerHeight,
-                      chartData: chartDataState.chart3.data,
-                      left: chartDataState.chart3.left,
-                      extrema,
-                      lastValue: chartDataState.chart3.lastValue,
-                      nextValue: chartDataState.chart3.nextValue,
-                      itemWidth,
-                      tooltipDisplayed,
-                      setTooltipDisplayed,
-                      chartKey: 'chart3',
-                    }}
-                  />
-                )} */}
               </Animated.View>
             </Animated.View>
           </PanGestureHandler>

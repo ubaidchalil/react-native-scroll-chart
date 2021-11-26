@@ -104,7 +104,6 @@
 				7BB44C5FA892102AEEDB8F87 /* Pods-scrollableLineChart-scrollableLineChartTests.debug.xcconfig */,
 				1447883CF1DFB0DF0112EA36 /* Pods-scrollableLineChart-scrollableLineChartTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -485,6 +484,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F8JYJDY459;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = scrollableLineChart/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -511,6 +511,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F8JYJDY459;
 				INFOPLIST_FILE = scrollableLineChart/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -25,29 +25,33 @@ const ChartElements = ({
             chartHeight;
     return (
       <G key={`data-section-${index}`}>
-        <Circle
-          cx={dataXPoint + itemWidth / 2}
-          cy={dataYPoint}
-          fill="#000"
-          r="3.5"
-          onPress={() =>
-            onCircle({
-              xPosition: dataXPoint + itemWidth / 2,
-              yPosition: dataYPoint,
-            })
-          }
-        />
-        <Circle
-          cx={dataXPoint + itemWidth / 2}
-          cy={dataYPoint}
-          r="25"
-          onPress={() =>
-            onCircle({
-              xPosition: dataXPoint + itemWidth / 2,
-              yPosition: dataYPoint,
-            })
-          }
-        />
+        {!!item.value && (
+          <>
+            <Circle
+              cx={dataXPoint + itemWidth / 2}
+              cy={dataYPoint}
+              fill="#000"
+              r="3.5"
+              onPress={() =>
+                onCircle({
+                  xPosition: dataXPoint + itemWidth / 2,
+                  yPosition: dataYPoint,
+                })
+              }
+            />
+            <Circle
+              cx={dataXPoint + itemWidth / 2}
+              cy={dataYPoint}
+              r="25"
+              onPress={() =>
+                onCircle({
+                  xPosition: dataXPoint + itemWidth / 2,
+                  yPosition: dataYPoint,
+                })
+              }
+            />
+          </>
+        )}
         <Rect
           x={xPoint - 5}
           y={xAxisY1Point}
@@ -71,7 +75,7 @@ const ChartElements = ({
           y={xAxisY1Point + 20}
           textAnchor="middle"
           fill="#000">
-          {item.label}
+          {item.dataIndex}
         </SvgText>
       </G>
     );

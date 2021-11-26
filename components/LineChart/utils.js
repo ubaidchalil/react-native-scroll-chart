@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-
+const ITEM_LENGTH_IN_SECTION = 7;
 export const getMaxAndMin = ({
   dataList,
   currIndex,
@@ -12,9 +12,9 @@ export const getMaxAndMin = ({
   let max = 100;
 
   for (let i = currIndex - chartColumns; i < currIndex; i++) {
-    const dataArrayIndex = Math.ceil((i + 1) / 35);
-    let dataIndex = (i + 1) % 35;
-    dataIndex = dataIndex === 0 ? 35 : dataIndex;
+    const dataArrayIndex = Math.ceil((i + 1) / ITEM_LENGTH_IN_SECTION);
+    let dataIndex = (i + 1) % ITEM_LENGTH_IN_SECTION;
+    dataIndex = dataIndex === 0 ? ITEM_LENGTH_IN_SECTION : dataIndex;
     dataIndex = dataArrayIndex > 1 ? dataIndex + 1 : dataIndex;
 
     const value = dataList[dataArrayIndex - 1][dataIndex - 1]?.value;
@@ -44,7 +44,7 @@ export const getYAxisLabel = (max, min) => {
   const step = Math.round(diff / 3);
   const labels = [];
   for (let i = 0; i <= 3; i++) {
-    labels.push(max - step * i);
+    labels.push(Math.round(max - step * i));
   }
   return labels;
 };
@@ -54,11 +54,11 @@ export const getData = () => {
   for (let i = 0; i < 40; i++) {
     const data1 = [];
     if (i > 0) {
-      data1.push({key: i * 35, value: 101, day: 'Sun'});
+      data1.push({key: i * ITEM_LENGTH_IN_SECTION, value: 101, day: 'Sun'});
     }
-    for (let j = 0; j < 35; j++) {
+    for (let j = 0; j < ITEM_LENGTH_IN_SECTION; j++) {
       data1.push({
-        key: i * 35 + j + 1,
+        key: i * ITEM_LENGTH_IN_SECTION + j + 1,
         value: Math.floor(Math.random() * 100) + 100,
         day: 'Sun',
       });

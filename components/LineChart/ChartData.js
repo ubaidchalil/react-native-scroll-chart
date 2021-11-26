@@ -14,42 +14,76 @@ const getDPath = ({
   chartHeight,
   chartData,
   extrema,
-  lastValue,
-  nextValue,
   itemWidth,
+  diffIndex,
+  section,
 }) => {
   if (extrema.max === 0) {
     return '';
   }
 
+  let prefix = 'M';
   const dPath = chartData.reduce((path, data, index) => {
     const x = index * itemWidth + MARGIN_FROM_RIGHT + itemWidth / 2;
     const y =
       MARGIN_FROM_TOP +
       chartHeight -
       ((data.value - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
-    if (index === 0 && lastValue) {
-      const lastX = -(MARGIN_FROM_RIGHT + itemWidth / 2);
+
+    if (prefix === 'M' && data.value && data.prevValueIndex) {
+      const diffCurrentPrev =
+        Math.floor(data.dataIndex / 7) * 7 - data.prevValueIndex;
+      let finalDiff = diffCurrentPrev - 1;
+      if (index === chartData.length - 1) {
+        const mod = diffCurrentPrev % 7;
+        finalDiff = mod === 0 ? 7 : mod - 1;
+      }
+
+      const lastX = -(finalDiff * itemWidth + itemWidth / 2);
+
       const lastY =
         MARGIN_FROM_TOP +
         chartHeight -
-        ((lastValue - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
-      path += `M${lastX} ${lastY}L${x} ${y}`;
+        ((data.previousValue - extrema.min) / (extrema.max - extrema.min)) *
+          chartHeight;
+
+      path += `M${lastX} ${lastY}`;
+      prefix = 'L';
+      if (data.value) {
+        path += `L${x} ${y}`;
+      }
+
       return path;
     }
-
-    if (index === chartData.length - 1 && nextValue) {
-      const nextX = (index + 1) * itemWidth + MARGIN_FROM_RIGHT + itemWidth / 2;
+    if (index === chartData.length - 1 && data.nextValue && !data.value) {
+      const nextX =
+        (data.nextValueIndex -
+          data.prevValueIndex +
+          (data.prevValueIndex % 7)) *
+          itemWidth +
+        itemWidth / 2;
       const nextY =
         MARGIN_FROM_TOP +
         chartHeight -
-        ((nextValue - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
-      path += `L${x} ${y}L${nextX} ${nextY}`;
+        ((data.nextValue - extrema.min) / (extrema.max - extrema.min)) *
+          chartHeight;
+      if (data.value) {
+        path += `L${x} ${y}`;
+      }
+      path += `L${nextX} ${nextY}`;
       return path;
     }
 
-    const prefix = index === 0 ? 'M' : 'L';
+    if (!data.value) {
+      return path;
+    }
+
+    // const prefix = index === 0 ? 'M' : 'L';
+
     path += `${prefix}${x} ${y}`;
+
+    prefix = 'L';
+
     return path;
   }, '');
   return dPath;
@@ -59,9 +93,9 @@ const LineChart = ({
   chartHeight,
   chartData,
   extrema,
-  lastValue,
-  nextValue,
   itemWidth,
+  diffIndex,
+  section,
 }) => {
   const dPath = useMemo(
     () =>
@@ -69,13 +103,13 @@ const LineChart = ({
         chartHeight,
         chartData,
         extrema,
-        lastValue,
-        nextValue,
         itemWidth,
+        diffIndex,
+        section,
       }),
-    [chartHeight, chartData, extrema, lastValue, nextValue, itemWidth],
+    [chartHeight, chartData, extrema, itemWidth, diffIndex, section],
   );
-  return <Path d={dPath} stroke="#000" strokeWidth={1} fill="none" />;
+  return <Path d={dPath} stroke="#fff" strokeWidth={5} fill="none" />;
 };
 
 const Chart = ({
@@ -83,12 +117,13 @@ const Chart = ({
   chartData,
   extrema,
   left = 0,
-  lastValue,
-  nextValue,
   itemWidth,
   tooltipDisplayed,
   setTooltipDisplayed,
   chartKey,
+  diffIndex = 1,
+  section = 0,
+  backgroundColor,
 }) => {
   const [tooltipState, setTooltipState] = React.useState({
     isVisible: false,
@@ -122,7 +157,10 @@ const Chart = ({
   return (
     <Svg
       width={xAxisX1Point + itemWidth * chartData.length}
-      style={[styles.svgContainer(containerHeight), {left}]}>
+      style={[
+        styles.svgContainer(containerHeight, section),
+        {left, backgroundColor},
+      ]}>
       <G>
         {tooltipState.isVisible && (
           <Tooltip
@@ -137,9 +175,9 @@ const Chart = ({
             chartHeight,
             chartData,
             extrema,
-            lastValue,
-            nextValue,
             itemWidth,
+            diffIndex,
+            section,
           }}
         />
 
@@ -161,9 +199,9 @@ const Chart = ({
 };
 
 const styles = StyleSheet.create({
-  svgContainer: height => ({
+  svgContainer: (height, section = 0) => ({
     height,
-    zIndex: 6,
+    zIndex: section * 1 + 6,
     backgroundColor: '#fff',
     position: 'absolute',
   }),
