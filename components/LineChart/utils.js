@@ -6,6 +6,7 @@ export const getMaxAndMin = ({
   prevMin = 0,
   prevMax = 0,
   chartColumns = 7,
+  dataType = 'weight',
 }) => {
   let min = prevMin;
   let max = prevMax;
@@ -15,14 +16,35 @@ export const getMaxAndMin = ({
     let dataIndex = (i + 1) % ITEM_LENGTH_IN_SECTION;
     dataIndex = dataIndex === 0 ? ITEM_LENGTH_IN_SECTION : dataIndex;
     dataIndex = dataArrayIndex > 1 ? dataIndex + 1 : dataIndex;
-
-    const value = dataList[dataArrayIndex - 1][dataIndex - 1]?.value;
-
-    if (value < min) {
-      min = value || 0;
+    if (dataType === 'weight') {
+      min = min;
     }
-    if (value > max) {
-      max = value || 0;
+    const {value, previousValue, nextValue} =
+      dataList[dataArrayIndex - 1][dataIndex - 1];
+
+    const checkingValue = value || previousValue || nextValue;
+
+    const minValue = Math.min(
+      checkingValue,
+      previousValue || checkingValue,
+      nextValue || checkingValue,
+    );
+    const maxValue = Math.max(
+      checkingValue,
+      previousValue || checkingValue,
+      nextValue || checkingValue,
+    );
+
+    if (dataType === 'weight') {
+      min = min || minValue;
+      max = max || maxValue;
+    }
+
+    if (minValue < min) {
+      min = minValue || 0;
+    }
+    if (maxValue > max) {
+      max = maxValue || 0;
     }
   }
 
@@ -35,6 +57,7 @@ export const getMaxAndMin = ({
 
   min = min - diff < 0 ? 0 : min - diff;
   max = max + diff + 1;
+
   return [min, max];
 };
 

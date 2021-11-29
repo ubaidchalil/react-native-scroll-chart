@@ -31,9 +31,9 @@ const LineChart = ({
   const [tooltipDisplayed, setTooltipDisplayed] = useState(null);
 
   const [chartDataState, setChartDataState] = React.useState({
-    chart1: {data: [], left: 0, lastValue: null, backgroundColor: 'red'},
-    chart2: {data: [], left: 0, lastValue: null, backgroundColor: 'green'},
-    chart3: {data: [], left: 0, lastValue: null, backgroundColor: 'blue'},
+    chart1: {data: [], left: 0, lastValue: null, backgroundColor: 'white'},
+    chart2: {data: [], left: 0, lastValue: null, backgroundColor: 'white'},
+    chart3: {data: [], left: 0, lastValue: null, backgroundColor: 'white'},
   });
 
   const itemWidth =

@@ -24,12 +24,10 @@ const getPreviousDPath = ({
     Math.floor(data.dataIndex / 7) * 7 - data.prevValueIndex;
   let finalDiff = diffCurrentPrev - 1;
   if (index === chartData.length - 1) {
-    const mod = diffCurrentPrev % 7;
-    finalDiff = mod === 0 ? 7 : mod - 1;
+    finalDiff = finalDiff - 7;
   }
 
-  const half = section === 2 ? 0 : itemWidth / 2;
-  const lastX = -(finalDiff * itemWidth + half);
+  const lastX = -(finalDiff * itemWidth + itemWidth / 2);
 
   const lastY =
     MARGIN_FROM_TOP +
@@ -41,11 +39,21 @@ const getPreviousDPath = ({
   return path;
 };
 
-const getNextDPath = ({data, itemWidth, chartHeight, extrema, path}) => {
+const getNextDPath = ({
+  data,
+  itemWidth,
+  chartHeight,
+  extrema,
+  path,
+  section,
+}) => {
   let finalDiff =
     data.nextValueIndex - data.prevValueIndex + (data.prevValueIndex % 7);
   if (data.dataIndex - data.prevValueIndex > 7) {
-    finalDiff = finalDiff - 7;
+    finalDiff = data.nextValueIndex - data.dataIndex + 7;
+  }
+  if (data.dataIndex === 7) {
+    finalDiff = finalDiff - 1;
   }
   const nextX = finalDiff * itemWidth + itemWidth / 2;
   const nextY =
@@ -109,10 +117,15 @@ const getDPath = ({
         });
         prefix = 'L';
       }
-      path = getNextDPath({data, itemWidth, chartHeight, extrema, path});
-      if (data.dataIndex === 35) {
-        console.log({path});
-      }
+      path = getNextDPath({
+        data,
+        itemWidth,
+        chartHeight,
+        extrema,
+        path,
+        section,
+      });
+
       return path;
     }
 
@@ -149,7 +162,7 @@ const LineChart = ({
       }),
     [chartHeight, chartData, extrema, itemWidth, diffIndex, section],
   );
-  return <Path d={dPath} stroke="#fff" strokeWidth={5} fill="none" />;
+  return <Path d={dPath} stroke="#000" strokeWidth={1.5} fill="none" />;
 };
 
 const Chart = ({
