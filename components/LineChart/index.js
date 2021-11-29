@@ -95,7 +95,7 @@ const LineChart = ({
       (ITEM_LENGTH_IN_SECTION - 1) *
       itemWidth;
 
-    let diffIndex = nextSection - 1;
+    let diffIndex = nextSection;
     if (nextSection > 2) {
       left = left + itemWidth * (nextSection - 2);
       diffIndex = nextSection - 2;

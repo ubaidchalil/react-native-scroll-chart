@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 const ITEM_LENGTH_IN_SECTION = 7;
 export const getMaxAndMin = ({
   dataList,
@@ -8,8 +7,8 @@ export const getMaxAndMin = ({
   prevMax = 0,
   chartColumns = 7,
 }) => {
-  let min = 100;
-  let max = 100;
+  let min = prevMin;
+  let max = prevMax;
 
   for (let i = currIndex - chartColumns; i < currIndex; i++) {
     const dataArrayIndex = Math.ceil((i + 1) / ITEM_LENGTH_IN_SECTION);

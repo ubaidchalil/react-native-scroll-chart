@@ -10,6 +10,54 @@ import ChartElements from './ChartElements';
 import XAxis from './XAxis';
 import Tooltip from './Tooltip';
 
+const getPreviousDPath = ({
+  data,
+  chartData,
+  index,
+  itemWidth,
+  section,
+  chartHeight,
+  extrema,
+  path,
+}) => {
+  const diffCurrentPrev =
+    Math.floor(data.dataIndex / 7) * 7 - data.prevValueIndex;
+  let finalDiff = diffCurrentPrev - 1;
+  if (index === chartData.length - 1) {
+    const mod = diffCurrentPrev % 7;
+    finalDiff = mod === 0 ? 7 : mod - 1;
+  }
+
+  const half = section === 2 ? 0 : itemWidth / 2;
+  const lastX = -(finalDiff * itemWidth + half);
+
+  const lastY =
+    MARGIN_FROM_TOP +
+    chartHeight -
+    ((data.previousValue - extrema.min) / (extrema.max - extrema.min)) *
+      chartHeight;
+
+  path += `M${lastX} ${lastY}`;
+  return path;
+};
+
+const getNextDPath = ({data, itemWidth, chartHeight, extrema, path}) => {
+  let finalDiff =
+    data.nextValueIndex - data.prevValueIndex + (data.prevValueIndex % 7);
+  if (data.dataIndex - data.prevValueIndex > 7) {
+    finalDiff = finalDiff - 7;
+  }
+  const nextX = finalDiff * itemWidth + itemWidth / 2;
+  const nextY =
+    MARGIN_FROM_TOP +
+    chartHeight -
+    ((data.nextValue - extrema.min) / (extrema.max - extrema.min)) *
+      chartHeight;
+
+  path += `L${nextX} ${nextY}`;
+  return path;
+};
+
 const getDPath = ({
   chartHeight,
   chartData,
@@ -31,54 +79,46 @@ const getDPath = ({
       ((data.value - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
 
     if (prefix === 'M' && data.value && data.prevValueIndex) {
-      const diffCurrentPrev =
-        Math.floor(data.dataIndex / 7) * 7 - data.prevValueIndex;
-      let finalDiff = diffCurrentPrev - 1;
-      if (index === chartData.length - 1) {
-        const mod = diffCurrentPrev % 7;
-        finalDiff = mod === 0 ? 7 : mod - 1;
-      }
-
-      const lastX = -(finalDiff * itemWidth + itemWidth / 2);
-
-      const lastY =
-        MARGIN_FROM_TOP +
-        chartHeight -
-        ((data.previousValue - extrema.min) / (extrema.max - extrema.min)) *
-          chartHeight;
-
-      path += `M${lastX} ${lastY}`;
+      path = getPreviousDPath({
+        data,
+        chartData,
+        index,
+        itemWidth,
+        section,
+        chartHeight,
+        extrema,
+        path,
+      });
       prefix = 'L';
       if (data.value) {
         path += `L${x} ${y}`;
       }
-
       return path;
     }
     if (index === chartData.length - 1 && data.nextValue && !data.value) {
-      const nextX =
-        (data.nextValueIndex -
-          data.prevValueIndex +
-          (data.prevValueIndex % 7)) *
-          itemWidth +
-        itemWidth / 2;
-      const nextY =
-        MARGIN_FROM_TOP +
-        chartHeight -
-        ((data.nextValue - extrema.min) / (extrema.max - extrema.min)) *
-          chartHeight;
-      if (data.value) {
-        path += `L${x} ${y}`;
+      if (prefix === 'M' && !data.value) {
+        path = getPreviousDPath({
+          data,
+          chartData,
+          index,
+          itemWidth,
+          section,
+          chartHeight,
+          extrema,
+          path,
+        });
+        prefix = 'L';
       }
-      path += `L${nextX} ${nextY}`;
+      path = getNextDPath({data, itemWidth, chartHeight, extrema, path});
+      if (data.dataIndex === 35) {
+        console.log({path});
+      }
       return path;
     }
 
     if (!data.value) {
       return path;
     }
-
-    // const prefix = index === 0 ? 'M' : 'L';
 
     path += `${prefix}${x} ${y}`;
 
@@ -121,7 +161,7 @@ const Chart = ({
   tooltipDisplayed,
   setTooltipDisplayed,
   chartKey,
-  diffIndex = 1,
+  diffIndex = 0,
   section = 0,
   backgroundColor,
 }) => {
