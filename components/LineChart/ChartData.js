@@ -9,7 +9,7 @@ import {
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
 import Tooltip from './Tooltip';
-
+const ITEM_LENGTH_IN_SECTION = 7;
 const getPreviousDPath = ({
   data,
   chartData,
@@ -21,10 +21,12 @@ const getPreviousDPath = ({
   path,
 }) => {
   const diffCurrentPrev =
-    Math.floor(data.dataIndex / 7) * 7 - data.prevValueIndex;
+    Math.floor(data.dataIndex / ITEM_LENGTH_IN_SECTION) *
+      ITEM_LENGTH_IN_SECTION -
+    data.prevValueIndex;
   let finalDiff = diffCurrentPrev - 1;
   if (index === chartData.length - 1) {
-    finalDiff = finalDiff - 7;
+    finalDiff = finalDiff - ITEM_LENGTH_IN_SECTION;
   }
 
   const lastX = -(finalDiff * itemWidth + itemWidth / 2);
@@ -48,11 +50,13 @@ const getNextDPath = ({
   section,
 }) => {
   let finalDiff =
-    data.nextValueIndex - data.prevValueIndex + (data.prevValueIndex % 7);
-  if (data.dataIndex - data.prevValueIndex > 7) {
-    finalDiff = data.nextValueIndex - data.dataIndex + 7;
+    data.nextValueIndex -
+    data.prevValueIndex +
+    (data.prevValueIndex % ITEM_LENGTH_IN_SECTION);
+  if (data.dataIndex - data.prevValueIndex > ITEM_LENGTH_IN_SECTION) {
+    finalDiff = data.nextValueIndex - data.dataIndex + ITEM_LENGTH_IN_SECTION;
   }
-  if (data.dataIndex === 7) {
+  if (data.dataIndex === ITEM_LENGTH_IN_SECTION) {
     finalDiff = finalDiff - 1;
   }
   const nextX = finalDiff * itemWidth + itemWidth / 2;
@@ -190,17 +194,15 @@ const Chart = ({
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
-  const onCircle = ({xPosition, yPosition}) => {
+  const onCircle = ({xPosition, yPosition, selectedIndex}) => {
     setTooltipDisplayed(chartKey);
-    setTooltipState({xPosition, yPosition, isVisible: true});
+    setTooltipState({xPosition, yPosition, isVisible: true, selectedIndex});
   };
 
   React.useEffect(() => {
-    if (tooltipDisplayed !== chartKey) {
-      setTooltipState({isVisible: false});
-    }
+    setTooltipState({...tooltipState, isVisible: false});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tooltipDisplayed]);
+  }, [left]);
 
   React.useEffect(() => {
     setTooltipState({...tooltipState, isVisible: false});
@@ -219,6 +221,7 @@ const Chart = ({
           <Tooltip
             xPosition={tooltipState.xPosition}
             yPosition={tooltipState.yPosition}
+            selectedIndex={tooltipState.selectedIndex}
             containerHeight={containerHeight}
             itemWidth={itemWidth}
           />

@@ -156,7 +156,9 @@ const LineChart = ({
       chartColumns,
     });
     const [min, max] = minMax;
-    setExtrema({min, max});
+    if (extrema.min !== min || extrema.max !== max) {
+      setExtrema({min, max});
+    }
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps

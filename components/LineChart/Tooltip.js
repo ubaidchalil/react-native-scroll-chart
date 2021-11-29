@@ -4,14 +4,27 @@ import {MARGIN_FROM_BOTTOM, MARGIN_FROM_TOP} from './constants';
 
 const TOOL_TIP_HEIGHT = 40;
 
-const Tooltip = ({xPosition, yPosition, containerHeight, itemWidth}) => {
+const Tooltip = ({
+  xPosition,
+  yPosition,
+  selectedIndex,
+  containerHeight,
+  itemWidth,
+}) => {
   const y1Line = MARGIN_FROM_TOP - 2;
   const y2Line = containerHeight - MARGIN_FROM_BOTTOM;
   const toolTipWidth = 85;
+
+  const mode = selectedIndex % 7;
+
+  const diffArea = toolTipWidth / 2 - 10;
+
+  let additionalArea = mode === 0 ? diffArea : 0;
+  additionalArea = mode === 7 - 1 ? -diffArea : additionalArea;
   return (
     <G key="xAxis yAxis">
       <Rect
-        x={xPosition - toolTipWidth / 2}
+        x={xPosition - toolTipWidth / 2 + additionalArea}
         y={y1Line - TOOL_TIP_HEIGHT}
         rx="3"
         ry="3"
@@ -20,7 +33,7 @@ const Tooltip = ({xPosition, yPosition, containerHeight, itemWidth}) => {
         fill="#000"
       />
       <SvgText
-        x={-xPosition}
+        x={-xPosition - additionalArea}
         y={y1Line - TOOL_TIP_HEIGHT + 15}
         textAnchor="middle"
         transform="scale(-1,1)"
@@ -28,7 +41,7 @@ const Tooltip = ({xPosition, yPosition, containerHeight, itemWidth}) => {
         Sep 14, 21
       </SvgText>
       <SvgText
-        x={-xPosition}
+        x={-xPosition - additionalArea}
         y={y1Line - TOOL_TIP_HEIGHT + 32}
         textAnchor="middle"
         transform="scale(-1,1)"
@@ -44,6 +57,7 @@ const Tooltip = ({xPosition, yPosition, containerHeight, itemWidth}) => {
         y2={y2Line}
         stroke="#000"
         strokeWidth="1"
+        strokeDasharray="5,5"
       />
     </G>
   );
