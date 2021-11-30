@@ -26,7 +26,7 @@ const LineChart = ({
   chartColumns = 7,
 }) => {
   const [displayedColumns, setDisplayedColumns] = useState(null);
-  const [extrema, setExtrema] = useState({min: 0, max: 0});
+  const [yAxisLimits, setYAxisLimits] = useState({min: 0, max: 0});
   const [chartState, setChartState] = React.useState(null);
   const [tooltipDisplayed, setTooltipDisplayed] = useState(null);
 
@@ -95,10 +95,8 @@ const LineChart = ({
       (ITEM_LENGTH_IN_SECTION - 1) *
       itemWidth;
 
-    let diffIndex = nextSection;
     if (nextSection > 2) {
       left = left + itemWidth * (nextSection - 2);
-      diffIndex = nextSection - 2;
     }
 
     const index =
@@ -115,8 +113,7 @@ const LineChart = ({
           ...chartDataState.chart1,
           data: data,
           left: left,
-          diffIndex,
-          section: nextSection,
+          sectionIndex: nextSection,
         },
       });
     } else if (mod === 2) {
@@ -126,8 +123,7 @@ const LineChart = ({
           ...chartDataState.chart2,
           data: data,
           left: left,
-          diffIndex,
-          section: nextSection,
+          sectionIndex: nextSection,
         },
       });
     } else {
@@ -137,8 +133,7 @@ const LineChart = ({
           ...chartDataState.chart3,
           data: data,
           left: left,
-          diffIndex,
-          section: nextSection,
+          sectionIndex: nextSection,
         },
       });
     }
@@ -149,15 +144,15 @@ const LineChart = ({
     if (!displayedColumns) {
       return;
     }
-    const minMax = getMaxAndMin({
+    const limits = getMaxAndMin({
       dataList: chartData,
       currIndex: displayedColumns,
       diff: 5,
       chartColumns,
     });
-    const [min, max] = minMax;
-    if (extrema.min !== min || extrema.max !== max) {
-      setExtrema({min, max});
+    const [min, max] = limits;
+    if (yAxisLimits.min !== min || yAxisLimits.max !== max) {
+      setYAxisLimits({min, max});
     }
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
@@ -302,14 +297,13 @@ const LineChart = ({
                           containerHeight,
                           chartData: chartDataState?.[section].data,
                           left: chartDataState?.[section].left,
-                          extrema,
+                          yAxisLimits,
                           itemWidth,
-                          section: chartDataState?.[section].section,
+                          sectionIndex: chartDataState?.[section].sectionIndex,
                           tooltipDisplayed,
                           setTooltipDisplayed,
                           chartKey: [section],
                           key: [section],
-                          diffIndex: chartDataState?.[section].diffIndex,
                           backgroundColor:
                             chartDataState?.[section].backgroundColor,
                         }}

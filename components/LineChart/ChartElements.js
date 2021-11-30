@@ -3,7 +3,7 @@ import {G, Line, Text as SvgText, Circle, Rect} from 'react-native-svg';
 import {MARGIN_FROM_TOP, MARGIN_FROM_RIGHT} from './constants';
 
 const ChartElements = ({
-  extrema,
+  yAxisLimits,
   chartData,
   xAxisX1Point,
   chartHeight,
@@ -15,13 +15,14 @@ const ChartElements = ({
     const xPoint = xAxisX1Point + itemWidth * index;
 
     const dataXPoint =
-      extrema.max === 0 ? 0 : index * itemWidth + MARGIN_FROM_RIGHT;
+      yAxisLimits.max === 0 ? 0 : index * itemWidth + MARGIN_FROM_RIGHT;
     const dataYPoint =
-      extrema.max === 0
+      yAxisLimits.max === 0
         ? 0
         : MARGIN_FROM_TOP +
           chartHeight -
-          ((item.value - extrema.min) / (extrema.max - extrema.min)) *
+          ((item.value - yAxisLimits.min) /
+            (yAxisLimits.max - yAxisLimits.min)) *
             chartHeight;
     return (
       <G key={`data-section-${index}`}>

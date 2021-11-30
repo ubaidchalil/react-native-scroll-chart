@@ -4,13 +4,7 @@ import {MARGIN_FROM_BOTTOM, MARGIN_FROM_TOP} from './constants';
 
 const TOOL_TIP_HEIGHT = 40;
 
-const Tooltip = ({
-  xPosition,
-  yPosition,
-  selectedIndex,
-  containerHeight,
-  itemWidth,
-}) => {
+const Tooltip = ({xPosition, yPosition, selectedIndex, containerHeight}) => {
   const y1Line = MARGIN_FROM_TOP - 2;
   const y2Line = containerHeight - MARGIN_FROM_BOTTOM;
   const toolTipWidth = 85;

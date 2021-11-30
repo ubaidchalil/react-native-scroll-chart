@@ -1,6 +1,6 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet} from 'react-native';
-import Svg, {G, Line, Path} from 'react-native-svg';
+import Svg, {G, Path} from 'react-native-svg';
 import {
   MARGIN_FROM_TOP,
   MARGIN_FROM_RIGHT,
@@ -15,9 +15,8 @@ const getPreviousDPath = ({
   chartData,
   index,
   itemWidth,
-  section,
   chartHeight,
-  extrema,
+  yAxisLimits,
   path,
 }) => {
   const diffCurrentPrev =
@@ -34,21 +33,15 @@ const getPreviousDPath = ({
   const lastY =
     MARGIN_FROM_TOP +
     chartHeight -
-    ((data.previousValue - extrema.min) / (extrema.max - extrema.min)) *
+    ((data.previousValue - yAxisLimits.min) /
+      (yAxisLimits.max - yAxisLimits.min)) *
       chartHeight;
 
   path += `M${lastX} ${lastY}`;
   return path;
 };
 
-const getNextDPath = ({
-  data,
-  itemWidth,
-  chartHeight,
-  extrema,
-  path,
-  section,
-}) => {
+const getNextDPath = ({data, itemWidth, chartHeight, yAxisLimits, path}) => {
   let finalDiff =
     data.nextValueIndex -
     data.prevValueIndex +
@@ -63,22 +56,15 @@ const getNextDPath = ({
   const nextY =
     MARGIN_FROM_TOP +
     chartHeight -
-    ((data.nextValue - extrema.min) / (extrema.max - extrema.min)) *
+    ((data.nextValue - yAxisLimits.min) / (yAxisLimits.max - yAxisLimits.min)) *
       chartHeight;
 
   path += `L${nextX} ${nextY}`;
   return path;
 };
 
-const getDPath = ({
-  chartHeight,
-  chartData,
-  extrema,
-  itemWidth,
-  diffIndex,
-  section,
-}) => {
-  if (extrema.max === 0) {
+const getDPath = ({chartHeight, chartData, yAxisLimits, itemWidth}) => {
+  if (yAxisLimits.max === 0) {
     return '';
   }
 
@@ -88,7 +74,8 @@ const getDPath = ({
     const y =
       MARGIN_FROM_TOP +
       chartHeight -
-      ((data.value - extrema.min) / (extrema.max - extrema.min)) * chartHeight;
+      ((data.value - yAxisLimits.min) / (yAxisLimits.max - yAxisLimits.min)) *
+        chartHeight;
 
     if (prefix === 'M' && data.value && data.prevValueIndex) {
       path = getPreviousDPath({
@@ -96,9 +83,8 @@ const getDPath = ({
         chartData,
         index,
         itemWidth,
-        section,
         chartHeight,
-        extrema,
+        yAxisLimits,
         path,
       });
       prefix = 'L';
@@ -114,9 +100,8 @@ const getDPath = ({
           chartData,
           index,
           itemWidth,
-          section,
           chartHeight,
-          extrema,
+          yAxisLimits,
           path,
         });
         prefix = 'L';
@@ -125,9 +110,8 @@ const getDPath = ({
         data,
         itemWidth,
         chartHeight,
-        extrema,
+        yAxisLimits,
         path,
-        section,
       });
 
       return path;
@@ -146,25 +130,16 @@ const getDPath = ({
   return dPath;
 };
 
-const LineChart = ({
-  chartHeight,
-  chartData,
-  extrema,
-  itemWidth,
-  diffIndex,
-  section,
-}) => {
+const LineChart = ({chartHeight, chartData, yAxisLimits, itemWidth}) => {
   const dPath = useMemo(
     () =>
       getDPath({
         chartHeight,
         chartData,
-        extrema,
+        yAxisLimits,
         itemWidth,
-        diffIndex,
-        section,
       }),
-    [chartHeight, chartData, extrema, itemWidth, diffIndex, section],
+    [chartHeight, chartData, yAxisLimits, itemWidth],
   );
   return <Path d={dPath} stroke="#000" strokeWidth={1.5} fill="none" />;
 };
@@ -172,14 +147,12 @@ const LineChart = ({
 const Chart = ({
   containerHeight,
   chartData,
-  extrema,
+  yAxisLimits,
   left = 0,
   itemWidth,
-  tooltipDisplayed,
   setTooltipDisplayed,
   chartKey,
-  diffIndex = 0,
-  section = 0,
+  sectionIndex = 0,
   backgroundColor,
 }) => {
   const [tooltipState, setTooltipState] = React.useState({
@@ -207,13 +180,13 @@ const Chart = ({
   React.useEffect(() => {
     setTooltipState({...tooltipState, isVisible: false});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extrema]);
+  }, [yAxisLimits]);
 
   return (
     <Svg
       width={xAxisX1Point + itemWidth * chartData.length}
       style={[
-        styles.svgContainer(containerHeight, section),
+        styles.svgContainer(containerHeight, sectionIndex),
         {left, backgroundColor},
       ]}>
       <G>
@@ -230,16 +203,14 @@ const Chart = ({
           {...{
             chartHeight,
             chartData,
-            extrema,
+            yAxisLimits,
             itemWidth,
-            diffIndex,
-            section,
           }}
         />
 
         <ChartElements
           {...{
-            extrema,
+            yAxisLimits,
             chartData,
             xAxisX1Point,
             chartHeight,
@@ -255,9 +226,9 @@ const Chart = ({
 };
 
 const styles = StyleSheet.create({
-  svgContainer: (height, section = 0) => ({
+  svgContainer: (height, sectionIndex = 0) => ({
     height,
-    zIndex: section * 1 + 6,
+    zIndex: sectionIndex * 1 + 6,
     backgroundColor: '#fff',
     position: 'absolute',
   }),
