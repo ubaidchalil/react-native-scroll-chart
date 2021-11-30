@@ -69,7 +69,7 @@ const LineChart = ({
   const translateX = useSharedValue(0);
   const valueAnimationEnd = useSharedValue(0);
   const check = useSharedValue(0);
-  const animationEnd = useSharedValue(0);
+  const isScrollEnd = useSharedValue(0);
   const pageNoAnimateState = useSharedValue(1);
 
   const MAX_TRANSLATE_X = -(itemWidth * dataCount);
@@ -78,20 +78,18 @@ const LineChart = ({
     if (!chartState) {
       return;
     }
-    if (chartState.section >= Math.ceil(dataCount / ITEM_LENGTH_IN_SECTION)) {
+
+    const {navigationMode, section} = chartState;
+
+    if (section >= Math.ceil(dataCount / ITEM_LENGTH_IN_SECTION)) {
       return;
     }
-    const diff = chartState.navigationMode === 'NEXT' ? 1 : -1;
+    const diff = navigationMode === 'NEXT' ? 1 : -1;
     const nextSection =
-      chartState.navigationMode === 'PREV' && chartState.section === 1
-        ? 1
-        : chartState.section + diff;
-    const mod = nextSection % 3;
+      navigationMode === 'PREV' && section === 1 ? 1 : section + diff;
 
     let left =
-      (chartState.navigationMode === 'NEXT'
-        ? chartState.section
-        : nextSection - 1) *
+      (navigationMode === 'NEXT' ? section : nextSection - 1) *
       (ITEM_LENGTH_IN_SECTION - 1) *
       itemWidth;
 
@@ -99,44 +97,24 @@ const LineChart = ({
       left = left + itemWidth * (nextSection - 2);
     }
 
-    const index =
-      chartState.navigationMode === 'NEXT'
-        ? chartState.section
-        : nextSection - 1;
+    const dataIndex = navigationMode === 'NEXT' ? section : nextSection - 1;
+    const data = chartData[dataIndex];
 
-    const data = chartData[index];
+    let mod = nextSection % 3;
+    mod = mod === 0 ? 3 : mod;
 
-    if (mod === 1) {
-      setChartDataState({
-        ...chartDataState,
-        chart1: {
-          ...chartDataState.chart1,
-          data: data,
-          left: left,
-          sectionIndex: nextSection,
-        },
-      });
-    } else if (mod === 2) {
-      setChartDataState({
-        ...chartDataState,
-        chart2: {
-          ...chartDataState.chart2,
-          data: data,
-          left: left,
-          sectionIndex: nextSection,
-        },
-      });
-    } else {
-      setChartDataState({
-        ...chartDataState,
-        chart3: {
-          ...chartDataState.chart3,
-          data: data,
-          left: left,
-          sectionIndex: nextSection,
-        },
-      });
-    }
+    let chartSection = CHART_SECTIONS[mod - 1];
+
+    setChartDataState({
+      ...chartDataState,
+      [chartSection]: {
+        ...chartDataState[chartSection],
+        data: data,
+        left: left,
+        sectionIndex: nextSection,
+      },
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartState]);
 
@@ -156,6 +134,8 @@ const LineChart = ({
     }
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
+
+    console.log({displayedColumns});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayedColumns, chartData]);
 
@@ -170,50 +150,47 @@ const LineChart = ({
     () => {
       return clampedTranslateX.value / itemWidth;
     },
-    data => {
-      const _pageNo = Math.floor(
-        (data + chartColumns + 1) / (ITEM_LENGTH_IN_SECTION + 0.5),
+    currentPosition => {
+      const pageNo = Math.floor(
+        (currentPosition + chartColumns + 1) / (ITEM_LENGTH_IN_SECTION + 0.5),
       );
 
-      if (pageNoAnimateState.value !== _pageNo + 1) {
+      if (pageNoAnimateState.value !== pageNo + 1) {
         const navigationMode =
-          _pageNo + 1 > pageNoAnimateState.value ? 'NEXT' : 'PREV';
-        runOnJS(setChartState)({navigationMode, section: _pageNo + 1});
-        pageNoAnimateState.value = _pageNo + 1;
+          pageNo + 1 > pageNoAnimateState.value ? 'NEXT' : 'PREV';
+        runOnJS(setChartState)({navigationMode, section: pageNo + 1});
+        pageNoAnimateState.value = pageNo + 1;
       }
 
-      if (
+      ///Condition to check the scroll reached END
+      const check1 =
         Math.abs(MAX_TRANSLATE_X) - itemWidth / 2 <
-        clampedTranslateX.value + itemWidth * 7
-      ) {
-        runOnJS(setDisplayedColumns)(Math.round(data + chartColumns));
-      }
+        clampedTranslateX.value + itemWidth * 7;
 
-      if (itemWidth / 2 > clampedTranslateX.value) {
-        runOnJS(setDisplayedColumns)(Math.round(data + chartColumns));
-      }
+      ///Condition to check the scroll reached START
+      const check2 = itemWidth / 2 > clampedTranslateX.value;
 
-      if (
-        animationEnd.value === 1 ||
+      ///Condition to check the scroll moved to NEXT item
+      const check3 =
+        isScrollEnd.value === 1 ||
         (Math.round(Math.abs(MAX_TRANSLATE_X) / itemWidth) <
-          Math.round(data) + 49 &&
-          check.value === 0)
-      ) {
-        check.value = 1;
-        runOnJS(setDisplayedColumns)(Math.round(data + chartColumns));
-      }
+          Math.round(currentPosition) + 49 &&
+          check.value === 0);
 
-      if (animationEnd.value === 1) {
-        animationEnd.value = 0;
-      }
-
-      if (
+      ///Condition to check for avoiding the irrevelent updation
+      const check4 =
         Math.round(Math.abs(MAX_TRANSLATE_X) / itemWidth) >
-          Math.round(data) + 49 &&
-        check.value === 1
-      ) {
-        check.value = 0;
+          Math.round(currentPosition) + 49 && check.value === 1;
+
+      if (check1 || check2 || check3) {
+        runOnJS(setDisplayedColumns)(
+          Math.round(currentPosition + chartColumns),
+        );
+        check.value = check3 ? 1 : check.value;
       }
+
+      isScrollEnd.value = isScrollEnd.value === 1 ? 0 : isScrollEnd.value;
+      check.value = check4 ? 0 : check.value;
     },
     [clampedTranslateX.value],
   );
@@ -223,7 +200,7 @@ const LineChart = ({
       context.x = clampedTranslateX.value;
     },
     onActive: (event, context) => {
-      animationEnd.value = 0;
+      isScrollEnd.value = 0;
       translateX.value = event.translationX + context.x;
     },
     onEnd: event => {
@@ -235,6 +212,7 @@ const LineChart = ({
           : valueAnimationEnd.value;
 
       let next = 0;
+
       if (Math.abs(event.velocityX) > 900) {
         let diff =
           (endValue + itemWidth * chartColumns) % (itemWidth * chartColumns);
@@ -255,7 +233,7 @@ const LineChart = ({
         next = (extra + divNum) * itemWidth;
       }
 
-      if (event.velocityX < 0) {
+      if (event.velocityX < 0 || event.translationX < 0) {
         next = -next;
       }
       valueAnimationEnd.value = endValue + next;
@@ -263,7 +241,7 @@ const LineChart = ({
       translateX.value = withSpring(
         valueAnimationEnd.value,
         {damping: 50},
-        () => (animationEnd.value = 1),
+        () => (isScrollEnd.value = 1),
       );
     },
   });
