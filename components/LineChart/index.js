@@ -25,7 +25,7 @@ const LineChart = ({
   dataCount,
   chartColumns = 7,
 }) => {
-  const [displayedColumns, setDisplayedColumns] = useState(null);
+  const [renderedIndex, setRenderedIndex] = useState(null);
   const [yAxisLimits, setYAxisLimits] = useState({min: 0, max: 0});
   const [chartState, setChartState] = React.useState(null);
   const [tooltipDisplayed, setTooltipDisplayed] = useState(null);
@@ -57,8 +57,8 @@ const LineChart = ({
           section: 1,
         });
       }
-      if (!displayedColumns) {
-        setDisplayedColumns(chartColumns);
+      if (!renderedIndex) {
+        setRenderedIndex(chartColumns);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,12 +119,12 @@ const LineChart = ({
   }, [chartState]);
 
   useEffect(() => {
-    if (!displayedColumns) {
+    if (!renderedIndex) {
       return;
     }
     const limits = getMaxAndMin({
       dataList: chartData,
-      currIndex: displayedColumns,
+      currIndex: renderedIndex,
       diff: 5,
       chartColumns,
     });
@@ -135,9 +135,9 @@ const LineChart = ({
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
 
-    console.log({displayedColumns});
+    console.log({renderedIndex});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayedColumns, chartData]);
+  }, [renderedIndex, chartData]);
 
   const clampedTranslateX = useDerivedValue(() => {
     return Math.max(
@@ -183,9 +183,7 @@ const LineChart = ({
           Math.round(currentPosition) + 49 && check.value === 1;
 
       if (check1 || check2 || check3) {
-        runOnJS(setDisplayedColumns)(
-          Math.round(currentPosition + chartColumns),
-        );
+        runOnJS(setRenderedIndex)(Math.round(currentPosition + chartColumns));
         check.value = check3 ? 1 : check.value;
       }
 
