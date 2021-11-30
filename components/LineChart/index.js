@@ -135,7 +135,6 @@ const LineChart = ({
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
 
-    console.log({renderedIndex});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [renderedIndex, chartData]);
 
