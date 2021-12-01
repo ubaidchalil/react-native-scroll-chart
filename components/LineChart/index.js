@@ -10,12 +10,15 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import {MARGIN_FROM_LEFT, MARGIN_FROM_RIGHT, width} from './constants';
+import {
+  LENGTH_ONE_SECTION,
+  MARGIN_FROM_LEFT,
+  MARGIN_FROM_RIGHT,
+  width,
+} from './constants';
 import Chart from './ChartData';
 import YAxis from './YAxis';
 import {getMaxAndMin, getYAxisLabel} from './utils';
-
-const ITEM_LENGTH_IN_SECTION = 7;
 
 const CHART_SECTIONS = ['chart1', 'chart2', 'chart3'];
 
@@ -24,6 +27,7 @@ const LineChart = ({
   containerHeight,
   dataCount,
   chartColumns = 7,
+  getChartDatesAndAverage,
 }) => {
   const [renderedIndex, setRenderedIndex] = useState(null);
   const [yAxisLimits, setYAxisLimits] = useState({min: 0, max: 0});
@@ -81,7 +85,7 @@ const LineChart = ({
 
     const {navigationMode, section} = chartState;
 
-    if (section >= Math.ceil(dataCount / ITEM_LENGTH_IN_SECTION)) {
+    if (section >= Math.ceil(dataCount / LENGTH_ONE_SECTION)) {
       return;
     }
     const diff = navigationMode === 'NEXT' ? 1 : -1;
@@ -90,7 +94,7 @@ const LineChart = ({
 
     let left =
       (navigationMode === 'NEXT' ? section : nextSection - 1) *
-      (ITEM_LENGTH_IN_SECTION - 1) *
+      (LENGTH_ONE_SECTION - 1) *
       itemWidth;
 
     if (nextSection > 2) {
@@ -134,7 +138,7 @@ const LineChart = ({
     }
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
-
+    getChartDatesAndAverage(renderedIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [renderedIndex, chartData]);
 
@@ -151,7 +155,7 @@ const LineChart = ({
     },
     currentPosition => {
       const pageNo = Math.floor(
-        (currentPosition + chartColumns + 1) / (ITEM_LENGTH_IN_SECTION + 0.5),
+        (currentPosition + chartColumns + 1) / (LENGTH_ONE_SECTION + 0.5),
       );
 
       if (pageNoAnimateState.value !== pageNo + 1) {
@@ -266,7 +270,7 @@ const LineChart = ({
                 style={[styles.chartContainer(containerHeight), rStyle]}>
                 {CHART_SECTIONS.map(
                   section =>
-                    chartDataState?.[section].data.length > 0 && (
+                    chartDataState?.[section]?.data?.length > 0 && (
                       <Chart
                         {...{
                           containerHeight,

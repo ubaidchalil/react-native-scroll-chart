@@ -1,4 +1,47 @@
-const ITEM_LENGTH_IN_SECTION = 7;
+import dayjs from 'dayjs';
+import {LENGTH_ONE_SECTION} from './constants';
+
+export const getDatesAndAverage = ({
+  dataList,
+  currIndex,
+  chartColumns = 7,
+  chartType = 'week',
+}) => {
+  let totalOfValue = 0;
+  let totalOfNotNullValue = 0;
+  const dates = {startDate: '', endDate: ''};
+
+  for (let i = currIndex - chartColumns; i < currIndex; i++) {
+    const {value, date, startDate, endDate} = dataList[i];
+
+    if (i === currIndex - chartColumns) {
+      if (chartType === 'week') {
+        dates.startDate = date;
+      } else {
+        dates.startDate = startDate;
+      }
+    }
+
+    if (i === currIndex - 1) {
+      if (chartType === 'week') {
+        dates.endDate = date;
+      } else {
+        dates.endDate = endDate;
+      }
+    }
+
+    totalOfValue += value || 0;
+    totalOfNotNullValue += value ? 1 : 0;
+  }
+
+  const _average = totalOfValue / totalOfNotNullValue;
+  const average = isNaN(_average) ? '--' : _average;
+  const title = `${dayjs(dates.startDate).format('DD MMM')} - ${dayjs(
+    dates.endDate,
+  ).format('DD MMM')}`;
+  return [average, title];
+};
+
 export const getMaxAndMin = ({
   dataList,
   currIndex,
@@ -12,9 +55,9 @@ export const getMaxAndMin = ({
   let max = prevMax;
 
   for (let i = currIndex - chartColumns; i < currIndex; i++) {
-    const dataArrayIndex = Math.ceil((i + 1) / ITEM_LENGTH_IN_SECTION);
-    let dataIndex = (i + 1) % ITEM_LENGTH_IN_SECTION;
-    dataIndex = dataIndex === 0 ? ITEM_LENGTH_IN_SECTION : dataIndex;
+    const dataArrayIndex = Math.ceil((i + 1) / LENGTH_ONE_SECTION);
+    let dataIndex = (i + 1) % LENGTH_ONE_SECTION;
+    dataIndex = dataIndex === 0 ? LENGTH_ONE_SECTION : dataIndex;
     dataIndex = dataArrayIndex > 1 ? dataIndex + 1 : dataIndex;
     if (dataType === 'weight') {
       min = min;
@@ -76,11 +119,11 @@ export const getData = () => {
   for (let i = 0; i < 40; i++) {
     const data1 = [];
     if (i > 0) {
-      data1.push({key: i * ITEM_LENGTH_IN_SECTION, value: 101, day: 'Sun'});
+      data1.push({key: i * LENGTH_ONE_SECTION, value: 101, day: 'Sun'});
     }
-    for (let j = 0; j < ITEM_LENGTH_IN_SECTION; j++) {
+    for (let j = 0; j < LENGTH_ONE_SECTION; j++) {
       data1.push({
-        key: i * ITEM_LENGTH_IN_SECTION + j + 1,
+        key: i * LENGTH_ONE_SECTION + j + 1,
         value: Math.floor(Math.random() * 100) + 100,
         day: 'Sun',
       });
@@ -96,13 +139,12 @@ export const getData2 = (dataArr, currentIndex = 0) => {
   const data = [];
 
   const length = dataArr.length;
-
-  const sectionCount = Math.ceil(length / 35);
+  const sectionCount = Math.ceil(length / LENGTH_ONE_SECTION);
   for (let i = 0 + currentIndex; i < sectionCount; i++) {
-    const endPositionDiff = i > 0 ? 36 : 35;
+    const endPositionDiff = LENGTH_ONE_SECTION;
     const startPositionDiff = i > 0 ? 1 : 0;
-    const startPosition = i * 35 - startPositionDiff;
-    let endPosition = i * 35 + endPositionDiff;
+    const startPosition = i * LENGTH_ONE_SECTION - startPositionDiff;
+    let endPosition = i * LENGTH_ONE_SECTION + endPositionDiff;
     endPosition = i === sectionCount - 1 ? length : endPosition;
     data.push(dataArr.slice(startPosition, endPosition));
   }

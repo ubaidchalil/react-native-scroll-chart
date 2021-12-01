@@ -1,507 +1,51 @@
-import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {SafeAreaView, StyleSheet, Text} from 'react-native';
 import 'react-native-gesture-handler';
 
 import LineChart from './components/LineChart';
-import {getData, getData2} from './components/LineChart/utils';
+import {getData2, getDatesAndAverage} from './components/LineChart/utils';
+import {API_MOCK_DATA} from './data';
 
 export default function ScrollableLineChart() {
   const [chartData, setChartData] = React.useState([]);
   const [dataCount, setDataCount] = React.useState(42);
 
+  const [chartTitleAndAverage, setChartTitleAndAverage] = useState({
+    title: '',
+    average: '',
+  });
+
   useEffect(() => {
-    const data = getData();
-    setChartData(data1);
+    const dataFromAPI = getData2(API_MOCK_DATA);
+    setChartData(dataFromAPI);
   }, []);
+
+  const getChartDatesAndAverage = currIndex => {
+    const [average, title] = getDatesAndAverage({
+      currIndex,
+      dataList: API_MOCK_DATA,
+      chartColumns: 7,
+    });
+    setChartTitleAndAverage({average, title});
+  };
 
   return (
     <SafeAreaView style={[styles.container]}>
-      <LineChart {...{chartData, containerHeight: 250, dataCount}} />
+      <Text style={styles.title}>{chartTitleAndAverage.title}</Text>
+      <LineChart
+        {...{
+          chartData,
+          containerHeight: 250,
+          dataCount,
+          getChartDatesAndAverage,
+          chartColumns: 7,
+        }}
+      />
+
+      <Text style={styles.average}>{chartTitleAndAverage.average}</Text>
     </SafeAreaView>
   );
 }
-
-const data1 = [
-  [
-    {
-      dataIndex: 1,
-      date: '2021-11-07',
-      value: null,
-      previousValue: null,
-      nextValue: 181,
-      label: 'Sun',
-      nextValueIndex: 3,
-    },
-    {
-      dataIndex: 2,
-      date: '2021-11-06',
-      value: null,
-      previousValue: null,
-      nextValue: 181,
-      label: 'Sat',
-      nextValueIndex: 3,
-    },
-    {
-      dataIndex: 3,
-      date: '2021-11-05',
-      value: 181,
-      previousValue: null,
-      label: 'Fri',
-      nextValue: 135,
-      nextValueIndex: 21,
-    },
-    {
-      dataIndex: 4,
-      date: '2021-11-04',
-      label: 'Thu',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-    },
-    {
-      dataIndex: 5,
-      date: '2021-11-03',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Wed',
-    },
-    {
-      dataIndex: 6,
-      date: '2021-11-02',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Tue',
-    },
-    {
-      dataIndex: 7,
-      date: '2021-11-01',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Mon',
-    },
-  ],
-  [
-    {
-      dataIndex: 7,
-      date: '2021-11-01',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Mon',
-    },
-    {
-      dataIndex: 8,
-      date: '2021-10-31',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Sun',
-    },
-    {
-      dataIndex: 9,
-      date: '2021-10-30',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Sat',
-    },
-    {
-      dataIndex: 10,
-      date: '2021-10-29',
-      value: null,
-      previousValue: 181,
-      nextValue: 135,
-      nextValueIndex: 21,
-      prevValueIndex: 3,
-      label: 'Fri',
-    },
-    {
-      dataIndex: 11,
-      date: '2021-10-28',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Thu',
-    },
-    {
-      dataIndex: 12,
-      date: '2021-10-27',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Wed',
-    },
-    {
-      dataIndex: 13,
-      date: '2021-10-26',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Tue',
-    },
-    {
-      dataIndex: 14,
-      date: '2021-10-25',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Mon',
-    },
-  ],
-  [
-    {
-      dataIndex: 14,
-      date: '2021-11-25',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Mon',
-    },
-    {
-      dataIndex: 15,
-      date: '2021-10-24',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Sun',
-    },
-    {
-      dataIndex: 16,
-      date: '2021-10-23',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Sat',
-    },
-    {
-      dataIndex: 17,
-      date: '2021-10-22',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Fri',
-    },
-    {
-      dataIndex: 18,
-      date: '2021-10-21',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Thu',
-    },
-    {
-      dataIndex: 19,
-      date: '2021-10-20',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Wed',
-    },
-    {
-      dataIndex: 20,
-      date: '2021-10-19',
-      value: null,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 135,
-      nextValueIndex: 21,
-      label: 'Tue',
-    },
-    {
-      dataIndex: 21,
-      date: '2021-10-18',
-      value: 135,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Mon',
-    },
-  ],
-  [
-    {
-      dataIndex: 21,
-      date: '2021-11-18',
-      value: 135,
-      previousValue: 181,
-      prevValueIndex: 3,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Mon',
-    },
-    {
-      dataIndex: 22,
-      date: '2021-10-17',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Sun',
-    },
-    {
-      dataIndex: 23,
-      date: '2021-10-16',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Sat',
-    },
-    {
-      dataIndex: 24,
-      date: '2021-10-15',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Fri',
-    },
-    {
-      dataIndex: 25,
-      date: '2021-10-14',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Thu',
-    },
-    {
-      dataIndex: 26,
-      date: '2021-10-13',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Wed',
-    },
-    {
-      dataIndex: 27,
-      date: '2021-10-12',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Tue',
-    },
-    {
-      dataIndex: 28,
-      date: '2021-10-11',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Mon',
-    },
-  ],
-  [
-    {
-      dataIndex: 28,
-      date: '2021-10-11',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Mon',
-    },
-    {
-      dataIndex: 29,
-      date: '2021-10-17',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Sun',
-    },
-    {
-      dataIndex: 30,
-      date: '2021-10-16',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Sat',
-    },
-    {
-      dataIndex: 31,
-      date: '2021-10-15',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Fri',
-    },
-    {
-      dataIndex: 32,
-      date: '2021-10-14',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Thu',
-    },
-    {
-      dataIndex: 33,
-      date: '2021-10-13',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Wed',
-    },
-    {
-      dataIndex: 34,
-      date: '2021-10-12',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Tue',
-    },
-    {
-      dataIndex: 35,
-      date: '2021-10-11',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Mon',
-    },
-  ],
-  [
-    {
-      dataIndex: 35,
-      date: '2021-10-11',
-      value: null,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 150,
-      nextValueIndex: 36,
-      label: 'Mon',
-    },
-    {
-      dataIndex: 36,
-      date: '2021-10-17',
-      value: 150,
-      previousValue: 135,
-      prevValueIndex: 21,
-      nextValue: 120,
-      nextValueIndex: 39,
-      label: 'Sun',
-    },
-    {
-      dataIndex: 37,
-      date: '2021-10-16',
-      value: null,
-      previousValue: 150,
-      prevValueIndex: 36,
-      nextValue: 120,
-      nextValueIndex: 39,
-      label: 'Sat',
-    },
-    {
-      dataIndex: 38,
-      date: '2021-10-15',
-      value: null,
-      previousValue: 150,
-      prevValueIndex: 36,
-      nextValue: 120,
-      nextValueIndex: 39,
-      label: 'Fri',
-    },
-    {
-      dataIndex: 39,
-      date: '2021-10-14',
-      value: 120,
-      previousValue: 150,
-      prevValueIndex: 36,
-      nextValue: null,
-      nextValueIndex: null,
-      label: 'Thu',
-    },
-    {
-      dataIndex: 40,
-      date: '2021-10-13',
-      value: null,
-      previousValue: 120,
-      prevValueIndex: 38,
-      nextValue: null,
-      nextValueIndex: null,
-      label: 'Wed',
-    },
-    {
-      dataIndex: 41,
-      date: '2021-10-12',
-      value: null,
-      previousValue: 120,
-      prevValueIndex: 38,
-      nextValue: null,
-      nextValueIndex: null,
-      label: 'Tue',
-    },
-    {
-      dataIndex: 42,
-      date: '2021-10-11',
-      value: null,
-      previousValue: 120,
-      prevValueIndex: 38,
-      nextValue: null,
-      nextValueIndex: null,
-      label: 'Mon',
-    },
-  ],
-];
 
 const styles = StyleSheet.create({
   container: {
@@ -511,6 +55,13 @@ const styles = StyleSheet.create({
   chartContainer: {
     paddingHorizontal: 10,
   },
+
+  title: {
+    fontSize: 25,
+    textAlign: 'center',
+    marginTop: 25,
+  },
+  average: {fontSize: 25, textAlign: 'center', marginTop: 25},
 });
 
 const CHARTS = {
@@ -544,61 +95,3 @@ const tooltipConfig = {
     titleKey: 'label',
   },
 };
-
-const data2 = [
-  {
-    date: '2021-11-07',
-    value: null,
-    previousValue: null,
-    nextValue: 181.0921244561723,
-    label: 'Sun',
-    nextValueIndex: 6,
-  },
-  {
-    date: '2021-11-06',
-    value: null,
-    previousValue: null,
-    nextValue: 181.0921244561723,
-    label: 'Sat',
-    nextValueIndex: 6,
-  },
-  {
-    date: '2021-11-05',
-    value: null,
-    previousValue: null,
-    nextValue: 181.0921244561723,
-    label: 'Fri',
-    nextValueIndex: 6,
-  },
-  {
-    date: '2021-11-04',
-    value: null,
-    previousValue: null,
-    nextValue: 181.0921244561723,
-    label: 'Thu',
-    nextValueIndex: 6,
-  },
-  {
-    date: '2021-11-03',
-    value: null,
-    previousValue: null,
-    nextValue: 181.0921244561723,
-    label: 'Wed',
-    nextValueIndex: 6,
-  },
-  {
-    date: '2021-11-02',
-    value: 181.0921244561723,
-    previousValue: null,
-    nextValue: 198.1,
-    label: 'Tue',
-    nextValueIndex: 7,
-  },
-  {
-    date: '2021-11-01',
-    value: 198.1,
-    previousValue: 181.0921244561723,
-    nextValue: 184.42331273633243,
-    label: 'Mon',
-  },
-];

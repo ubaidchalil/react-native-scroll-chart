@@ -5,11 +5,12 @@ import {
   MARGIN_FROM_TOP,
   MARGIN_FROM_RIGHT,
   MARGIN_FROM_BOTTOM,
+  LENGTH_ONE_SECTION,
 } from './constants';
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
 import Tooltip from './Tooltip';
-const ITEM_LENGTH_IN_SECTION = 7;
+
 const getPreviousDPath = ({
   data,
   chartData,
@@ -20,12 +21,11 @@ const getPreviousDPath = ({
   path,
 }) => {
   const diffCurrentPrev =
-    Math.floor(data.dataIndex / ITEM_LENGTH_IN_SECTION) *
-      ITEM_LENGTH_IN_SECTION -
+    Math.floor(data.dataIndex / LENGTH_ONE_SECTION) * LENGTH_ONE_SECTION -
     data.prevValueIndex;
   let finalDiff = diffCurrentPrev - 1;
   if (index === chartData.length - 1) {
-    finalDiff = finalDiff - ITEM_LENGTH_IN_SECTION;
+    finalDiff = finalDiff - LENGTH_ONE_SECTION;
   }
 
   const lastX = -(finalDiff * itemWidth + itemWidth / 2);
@@ -45,11 +45,11 @@ const getNextDPath = ({data, itemWidth, chartHeight, yAxisLimits, path}) => {
   let finalDiff =
     data.nextValueIndex -
     data.prevValueIndex +
-    (data.prevValueIndex % ITEM_LENGTH_IN_SECTION);
-  if (data.dataIndex - data.prevValueIndex > ITEM_LENGTH_IN_SECTION) {
-    finalDiff = data.nextValueIndex - data.dataIndex + ITEM_LENGTH_IN_SECTION;
+    (data.prevValueIndex % LENGTH_ONE_SECTION);
+  if (data.dataIndex - data.prevValueIndex > LENGTH_ONE_SECTION) {
+    finalDiff = data.nextValueIndex - data.dataIndex + LENGTH_ONE_SECTION;
   }
-  if (data.dataIndex === ITEM_LENGTH_IN_SECTION) {
+  if (data.dataIndex === LENGTH_ONE_SECTION) {
     finalDiff = finalDiff - 1;
   }
   const nextX = finalDiff * itemWidth + itemWidth / 2;

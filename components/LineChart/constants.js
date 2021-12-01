@@ -7,6 +7,8 @@ const MARGIN_FROM_TOP = 50;
 const MARGIN_FROM_RIGHT = 0;
 const MARGIN_FROM_BOTTOM = 35;
 
+const LENGTH_ONE_SECTION = 28;
+
 const ROWS = 4;
 
 export {
@@ -16,4 +18,5 @@ export {
   MARGIN_FROM_BOTTOM,
   ROWS,
   width,
+  LENGTH_ONE_SECTION,
 };
