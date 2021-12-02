@@ -47,12 +47,12 @@ const YAxis = ({yAxisLabelArray, containerHeight}) => {
       <G key="xAxis yAxis">
         <Line
           x1={yAxisX1Point}
-          y1={yAxisY1Point}
+          y1={yAxisY1Point - 10}
           x2={yAxisX2Point}
           y2={yAxisY2Point}
           stroke="#000"
           strokeWidth="1"
-          strokeDasharray="5,5"
+          strokeDasharray="5,3"
         />
       </G>
     );

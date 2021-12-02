@@ -51,7 +51,7 @@ const Tooltip = ({xPosition, yPosition, selectedIndex, containerHeight}) => {
         y2={y2Line}
         stroke="#000"
         strokeWidth="1"
-        strokeDasharray="5,5"
+        strokeDasharray="5,3"
       />
     </G>
   );

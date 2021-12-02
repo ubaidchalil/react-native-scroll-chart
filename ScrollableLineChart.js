@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 import 'react-native-gesture-handler';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
 import LineChart from './components/LineChart';
 import {getData2, getDatesAndAverage} from './components/LineChart/utils';
@@ -30,20 +31,22 @@ export default function ScrollableLineChart() {
   };
 
   return (
-    <SafeAreaView style={[styles.container]}>
-      <Text style={styles.title}>{chartTitleAndAverage.title}</Text>
-      <LineChart
-        {...{
-          chartData,
-          containerHeight: 250,
-          dataCount,
-          getChartDatesAndAverage,
-          chartColumns: 7,
-        }}
-      />
+    <SafeAreaProvider>
+      <SafeAreaView style={[styles.container]}>
+        <Text style={styles.title}>{chartTitleAndAverage.title}</Text>
+        <LineChart
+          {...{
+            chartData,
+            containerHeight: 225,
+            dataCount,
+            getChartDatesAndAverage,
+            chartColumns: 7,
+          }}
+        />
 
-      <Text style={styles.average}>{chartTitleAndAverage.average}</Text>
-    </SafeAreaView>
+        <Text style={styles.average}>{chartTitleAndAverage.average}</Text>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

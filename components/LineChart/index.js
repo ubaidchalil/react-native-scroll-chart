@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {PanGestureHandler} from 'react-native-gesture-handler';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+import {useWindowDimensions} from 'react-native';
 import Animated, {
   useAnimatedGestureHandler,
   useDerivedValue,
@@ -14,7 +17,6 @@ import {
   LENGTH_ONE_SECTION,
   MARGIN_FROM_LEFT,
   MARGIN_FROM_RIGHT,
-  width,
 } from './constants';
 import Chart from './ChartData';
 import YAxis from './YAxis';
@@ -33,6 +35,10 @@ const LineChart = ({
   const [yAxisLimits, setYAxisLimits] = useState({min: 0, max: 0});
   const [chartState, setChartState] = React.useState(null);
   const [tooltipDisplayed, setTooltipDisplayed] = useState(null);
+  const {height, width} = useWindowDimensions();
+  const {left: leftEdge, right} = useSafeAreaInsets();
+  const isLandscape = height < width;
+  const windowWidth = isLandscape ? width - leftEdge - right : width;
 
   const [chartDataState, setChartDataState] = React.useState({
     chart1: {data: [], left: 0, lastValue: null, backgroundColor: 'white'},
@@ -41,7 +47,7 @@ const LineChart = ({
   });
 
   const itemWidth =
-    (width - MARGIN_FROM_LEFT - MARGIN_FROM_RIGHT) / chartColumns;
+    (windowWidth - MARGIN_FROM_LEFT - MARGIN_FROM_RIGHT) / chartColumns;
 
   useEffect(() => {
     if (chartData.length > 0) {
@@ -75,6 +81,41 @@ const LineChart = ({
   const check = useSharedValue(0);
   const isScrollEnd = useSharedValue(0);
   const pageNoAnimateState = useSharedValue(1);
+
+  useEffect(() => {
+    translateX.value = 0;
+    clampedTranslateX.value = 0;
+    valueAnimationEnd.value = 0;
+    check.value = 0;
+
+    isScrollEnd.value = 0;
+    pageNoAnimateState.value = 1;
+
+    if (chartData?.[0]) {
+      setChartDataState({
+        ...chartDataState,
+        chart1: {
+          ...chartDataState.chart1,
+          data: chartData[0],
+          left: 0,
+          sectionIndex: 1,
+        },
+        chart2: {
+          ...chartDataState.chart2,
+          data: chartData[1] || [],
+          left: 1 * (LENGTH_ONE_SECTION - 1) * itemWidth,
+          sectionIndex: 2,
+        },
+        chart3: {
+          ...chartDataState.chart3,
+          data: chartData[2] || [],
+          left: 2 * (LENGTH_ONE_SECTION - 1) * itemWidth,
+          sectionIndex: 3,
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemWidth]);
 
   const MAX_TRANSLATE_X = -(itemWidth * dataCount);
 
@@ -126,6 +167,7 @@ const LineChart = ({
     if (!renderedIndex) {
       return;
     }
+
     const limits = getMaxAndMin({
       dataList: chartData,
       currIndex: renderedIndex,
@@ -303,6 +345,7 @@ export default LineChart;
 const styles = StyleSheet.create({
   svgWrapper: {
     backgroundColor: '#fff',
+    //  width: width,
   },
   panGestureContainer: {marginLeft: 51, overflow: 'hidden'},
   chartContainer: height => ({flexDirection: 'row', height}),

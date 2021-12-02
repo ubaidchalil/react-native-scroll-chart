@@ -11,7 +11,7 @@ const XAxis = ({xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}) => {
         y2={xAxisY2Point}
         stroke="#000"
         strokeWidth="1"
-        strokeDasharray="5,5"
+        strokeDasharray="5,3"
       />
     </G>
   );
