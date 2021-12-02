@@ -57,6 +57,13 @@ const ChartElements = ({
         )}
         <Rect
           x={xPoint - 5}
+          y={0}
+          width={itemWidth + 10}
+          height={50}
+          fill="#fff"
+        />
+        <Rect
+          x={xPoint - 5}
           y={xAxisY1Point}
           width={itemWidth + 10}
           height={50}
@@ -78,7 +85,7 @@ const ChartElements = ({
           y={xAxisY1Point + 20}
           textAnchor="middle"
           fill="#000">
-          {item.dataIndex}
+          {item.label}
         </SvgText>
       </G>
     );

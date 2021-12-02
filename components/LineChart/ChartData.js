@@ -190,15 +190,6 @@ const Chart = ({
         {left, backgroundColor},
       ]}>
       <G>
-        {tooltipState.isVisible && (
-          <Tooltip
-            xPosition={tooltipState.xPosition}
-            yPosition={tooltipState.yPosition}
-            selectedIndex={tooltipState.selectedIndex}
-            containerHeight={containerHeight}
-            itemWidth={itemWidth}
-          />
-        )}
         <LineChart
           {...{
             chartHeight,
@@ -220,6 +211,15 @@ const Chart = ({
           }}
         />
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
+        {tooltipState.isVisible && (
+          <Tooltip
+            xPosition={tooltipState.xPosition}
+            yPosition={tooltipState.yPosition}
+            selectedIndex={tooltipState.selectedIndex}
+            containerHeight={containerHeight}
+            itemWidth={itemWidth}
+          />
+        )}
       </G>
     </Svg>
   );
