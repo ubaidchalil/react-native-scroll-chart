@@ -155,13 +155,14 @@ const Chart = ({
   chartKey,
   sectionIndex = 0,
   backgroundColor,
-  yAxisLabelArray,
+  toolTipCallBackFunction,
 }) => {
   const [tooltipState, setTooltipState] = React.useState({
     isVisible: false,
     xPosition: 0,
     yPosition: 0,
     selectedIndex: -1,
+    toolTipData: {},
   });
   const xAxisX1Point = MARGIN_FROM_RIGHT;
   const xAxisY1Point = containerHeight - MARGIN_FROM_BOTTOM;
@@ -169,9 +170,16 @@ const Chart = ({
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
-  const onCircle = ({xPosition, yPosition, selectedIndex}) => {
+  const onCircle = ({xPosition, yPosition, selectedIndex, data}) => {
+    const toolTipData = toolTipCallBackFunction(data);
     setTooltipDisplayed(chartKey);
-    setTooltipState({xPosition, yPosition, isVisible: true, selectedIndex});
+    setTooltipState({
+      xPosition,
+      yPosition,
+      isVisible: true,
+      selectedIndex,
+      toolTipData,
+    });
   };
 
   React.useEffect(() => {
@@ -190,7 +198,6 @@ const Chart = ({
     const yAxisY1Point = MARGIN_FROM_TOP;
     return [...new Array(4)].map((_, index) => {
       const yPoint = yAxisY1Point + gapBetweenYAxis * index;
-      console.log({yPoint});
       return (
         <XAxis
           {...{
@@ -240,6 +247,7 @@ const Chart = ({
             xPosition={tooltipState.xPosition}
             yPosition={tooltipState.yPosition}
             selectedIndex={tooltipState.selectedIndex}
+            {...tooltipState.toolTipData}
             containerHeight={containerHeight}
             itemWidth={itemWidth}
           />

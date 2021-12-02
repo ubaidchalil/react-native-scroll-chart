@@ -30,6 +30,7 @@ const LineChart = ({
   dataCount,
   chartColumns = 7,
   getChartDatesAndAverage,
+  toolTipCallBackFunction,
 }) => {
   const [renderedIndex, setRenderedIndex] = useState(null);
   const [yAxisLimits, setYAxisLimits] = useState({min: 0, max: 0});
@@ -315,6 +316,7 @@ const LineChart = ({
                     chartDataState?.[section]?.data?.length > 0 && (
                       <Chart
                         {...{
+                          toolTipCallBackFunction,
                           containerHeight,
                           chartData: chartDataState?.[section].data,
                           left: chartDataState?.[section].left,

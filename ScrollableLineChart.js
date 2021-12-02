@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import 'react-native-gesture-handler';
@@ -30,6 +31,12 @@ export default function ScrollableLineChart() {
     setChartTitleAndAverage({average, title});
   };
 
+  const toolTipCallBackFunction = item => {
+    const titleField = dayjs(item.date).format('MMM DD, YY');
+    const dataField = `${Number(item.value).toFixed(1)} kgs`;
+    return {dataField, titleField};
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={[styles.container]}>
@@ -41,6 +48,7 @@ export default function ScrollableLineChart() {
             dataCount,
             getChartDatesAndAverage,
             chartColumns: 7,
+            toolTipCallBackFunction,
           }}
         />
 

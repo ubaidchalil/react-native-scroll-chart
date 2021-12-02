@@ -50,6 +50,7 @@ const ChartElements = ({
                   xPosition: dataXPoint + itemWidth / 2,
                   yPosition: dataYPoint,
                   selectedIndex: item.dataIndex,
+                  data: item,
                 })
               }
             />
