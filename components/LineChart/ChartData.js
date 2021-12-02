@@ -6,6 +6,7 @@ import {
   MARGIN_FROM_RIGHT,
   MARGIN_FROM_BOTTOM,
   LENGTH_ONE_SECTION,
+  ROWS,
 } from './constants';
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
@@ -154,6 +155,7 @@ const Chart = ({
   chartKey,
   sectionIndex = 0,
   backgroundColor,
+  yAxisLabelArray,
 }) => {
   const [tooltipState, setTooltipState] = React.useState({
     isVisible: false,
@@ -181,6 +183,27 @@ const Chart = ({
     setTooltipState({...tooltipState, isVisible: false});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [yAxisLimits]);
+
+  const renderYAxisLabels = () => {
+    const gapBetweenYAxis =
+      (containerHeight - MARGIN_FROM_BOTTOM - MARGIN_FROM_TOP) / (ROWS - 1);
+    const yAxisY1Point = MARGIN_FROM_TOP;
+    return [...new Array(4)].map((_, index) => {
+      const yPoint = yAxisY1Point + gapBetweenYAxis * index;
+      console.log({yPoint});
+      return (
+        <XAxis
+          {...{
+            xAxisX1Point,
+            xAxisY1Point: yPoint,
+            xAxisX2Point,
+            xAxisY2Point: yPoint,
+            type: 'yLine',
+          }}
+        />
+      );
+    });
+  };
 
   return (
     <Svg
@@ -210,6 +233,7 @@ const Chart = ({
             onCircle,
           }}
         />
+        {renderYAxisLabels()}
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
         {tooltipState.isVisible && (
           <Tooltip
