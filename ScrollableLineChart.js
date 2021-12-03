@@ -81,7 +81,7 @@ const CHARTS = {
   measurements: 'measurements',
 };
 
-const chartTypes = [
+const chartDataTypes = [
   {
     title: 'Weekly',
     key: 'weekly',
@@ -91,18 +91,7 @@ const chartTypes = [
   {
     title: 'Monthly',
     key: 'monthly',
-    columnsInScreen: 7,
+    columnsInScreen: 4,
     availableCharts: [CHARTS.weight, CHARTS.steps, CHARTS.measurements],
   },
 ];
-
-const tooltipConfig = {
-  weekly: {
-    titleDataType: 'date',
-    titleKey: 'date',
-  },
-  monthly: {
-    titleDataType: 'string',
-    titleKey: 'label',
-  },
-};
