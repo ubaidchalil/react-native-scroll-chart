@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import {StyleSheet} from 'react-native';
-import Svg, {G, Path} from 'react-native-svg';
+import Svg, {G, Path, Rect} from 'react-native-svg';
 import {
   MARGIN_FROM_TOP,
   MARGIN_FROM_RIGHT,
@@ -11,6 +11,8 @@ import {
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
 import Tooltip from './Tooltip';
+
+const barWidthDiffPercentage = 0.38;
 
 const getPreviousDPath = ({
   data,
@@ -145,6 +147,48 @@ const LineChart = ({chartHeight, chartData, yAxisLimits, itemWidth}) => {
   return <Path d={dPath} stroke="#000" strokeWidth={1.5} fill="none" />;
 };
 
+const BarChart = ({
+  chartHeight,
+  chartData,
+  yAxisLimits,
+  itemWidth,
+  toolTipHandler,
+}) => {
+  const diff = itemWidth * barWidthDiffPercentage;
+  return chartData.map((data, index) => {
+    const dataXPoint =
+      yAxisLimits.max === 0 ? 0 : index * itemWidth + MARGIN_FROM_RIGHT;
+    const dataYPoint =
+      yAxisLimits.max === 0
+        ? 0
+        : MARGIN_FROM_TOP +
+          chartHeight -
+          ((data.value - yAxisLimits.min) /
+            (yAxisLimits.max - yAxisLimits.min)) *
+            chartHeight;
+    let height = chartHeight + MARGIN_FROM_TOP - dataYPoint;
+    height = data.value ? height : 0;
+
+    return (
+      <Rect
+        x={dataXPoint + diff / 2}
+        y={dataYPoint}
+        width={itemWidth - diff}
+        height={height}
+        fill="#000"
+        onPress={() =>
+          toolTipHandler({
+            xPosition: dataXPoint + itemWidth / 2,
+            yPosition: dataYPoint,
+            selectedIndex: data.dataIndex,
+            data,
+          })
+        }
+      />
+    );
+  });
+};
+
 const Chart = ({
   containerHeight,
   chartData,
@@ -156,6 +200,7 @@ const Chart = ({
   sectionIndex = 0,
   backgroundColor,
   toolTipCallBackFunction,
+  chartType,
 }) => {
   const [tooltipState, setTooltipState] = React.useState({
     isVisible: false,
@@ -170,7 +215,7 @@ const Chart = ({
   const xAxisY2Point = containerHeight - MARGIN_FROM_BOTTOM;
   const chartHeight = containerHeight - MARGIN_FROM_TOP - MARGIN_FROM_BOTTOM;
 
-  const onCircle = ({xPosition, yPosition, selectedIndex, data}) => {
+  const toolTipHandler = ({xPosition, yPosition, selectedIndex, data}) => {
     const toolTipData = toolTipCallBackFunction(data);
     setTooltipDisplayed(chartKey);
     setTooltipState({
@@ -221,15 +266,29 @@ const Chart = ({
       ]}>
       <G>
         {renderYAxisLines()}
-        <LineChart
-          {...{
-            chartHeight,
-            chartData,
-            yAxisLimits,
-            itemWidth,
-          }}
-        />
 
+        {chartType === 'line' && (
+          <LineChart
+            {...{
+              chartHeight,
+              chartData,
+              yAxisLimits,
+              itemWidth,
+            }}
+          />
+        )}
+
+        {chartType === 'bar' && (
+          <BarChart
+            {...{
+              chartHeight,
+              chartData,
+              yAxisLimits,
+              itemWidth,
+              toolTipHandler,
+            }}
+          />
+        )}
         <ChartElements
           {...{
             yAxisLimits,
@@ -238,19 +297,19 @@ const Chart = ({
             chartHeight,
             xAxisY1Point,
             itemWidth,
-            onCircle,
+            onCircle: toolTipHandler,
+            chartType,
           }}
         />
 
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
         {tooltipState.isVisible && (
           <Tooltip
+            {...{chartType, itemWidth, containerHeight}}
+            {...tooltipState.toolTipData}
             xPosition={tooltipState.xPosition}
             yPosition={tooltipState.yPosition}
             selectedIndex={tooltipState.selectedIndex}
-            {...tooltipState.toolTipData}
-            containerHeight={containerHeight}
-            itemWidth={itemWidth}
           />
         )}
       </G>

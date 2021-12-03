@@ -11,6 +11,7 @@ const Tooltip = ({
   containerHeight,
   titleField,
   dataField,
+  chartType,
 }) => {
   const y1Line = MARGIN_FROM_TOP - 2;
   const y2Line = containerHeight - MARGIN_FROM_BOTTOM;
@@ -54,7 +55,9 @@ const Tooltip = ({
           {dataField}
         </SvgText>
       )}
-      <Circle cx={xPosition} cy={yPosition} fill="#000" r="6" />
+      {chartType === 'line' && (
+        <Circle cx={xPosition} cy={yPosition} fill="#000" r="6" />
+      )}
       <Line
         x1={xPosition}
         y1={y1Line}

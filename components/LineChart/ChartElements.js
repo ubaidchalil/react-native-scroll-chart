@@ -10,6 +10,7 @@ const ChartElements = ({
   xAxisY1Point,
   itemWidth,
   onCircle,
+  chartType,
 }) => {
   return chartData.map((item, index) => {
     const xPoint = xAxisX1Point + itemWidth * index;
@@ -26,7 +27,7 @@ const ChartElements = ({
             chartHeight;
     return (
       <G key={`data-section-${index}`}>
-        {!!item.value && (
+        {chartType === 'line' && !!item.value && (
           <>
             <Circle
               cx={dataXPoint + itemWidth / 2}
@@ -38,6 +39,7 @@ const ChartElements = ({
                   xPosition: dataXPoint + itemWidth / 2,
                   yPosition: dataYPoint,
                   selectedIndex: item.dataIndex,
+                  data: item,
                 })
               }
             />

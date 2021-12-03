@@ -31,6 +31,7 @@ const LineChart = ({
   chartColumns = 7,
   getChartDatesAndAverage,
   toolTipCallBackFunction,
+  chartType = 'bar',
 }) => {
   const [renderedIndex, setRenderedIndex] = useState(null);
   const [yAxisLimits, setYAxisLimits] = useState({min: 0, max: 0});
@@ -329,6 +330,7 @@ const LineChart = ({
                           key: [section],
                           backgroundColor:
                             chartDataState?.[section].backgroundColor,
+                          chartType,
                         }}
                       />
                     ),
