@@ -150,26 +150,3 @@ export const getData2 = (dataArr, currentIndex = 0) => {
   }
   return data;
 };
-
-// weekly | monthly;
-
-const lastEnrty = '2021-11-30';
-
-const weekendDate = '2021-12-05';
-
-const monthly = [
-  {
-    startDate: '2021-11-29',
-    endDate: '2021-12-05',
-    value: 0,
-    previousValue: null,
-    label: '11/29-12/5',
-  },
-  {
-    startDate: '2021-11-29',
-    endDate: '2021-12-05',
-    value: 210,
-    previousValue: 0,
-    label: '11/29-12/5',
-  },
-];
