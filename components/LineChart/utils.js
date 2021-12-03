@@ -49,7 +49,7 @@ export const getMaxAndMin = ({
   prevMin = 0,
   prevMax = 0,
   chartColumns = 7,
-  dataType = 'weight',
+  chartType = 'line',
 }) => {
   let min = prevMin;
   let max = prevMax;
@@ -59,7 +59,7 @@ export const getMaxAndMin = ({
     let dataIndex = (i + 1) % LENGTH_ONE_SECTION;
     dataIndex = dataIndex === 0 ? LENGTH_ONE_SECTION : dataIndex;
     dataIndex = dataArrayIndex > 1 ? dataIndex + 1 : dataIndex;
-    if (dataType === 'weight') {
+    if (chartType === 'line') {
       min = min;
     }
     const {value, previousValue, nextValue} =
@@ -78,7 +78,7 @@ export const getMaxAndMin = ({
       nextValue || checkingValue,
     );
 
-    if (dataType === 'weight') {
+    if (chartType === 'line') {
       min = min || minValue;
       max = max || maxValue;
     }
@@ -106,7 +106,7 @@ export const getMaxAndMin = ({
 
 export const getYAxisLabel = (max, min) => {
   const diff = max - min;
-  const step = Math.round(diff / 3);
+  const step = diff / 3;
   const labels = [];
   for (let i = 0; i <= 3; i++) {
     labels.push(Math.round(max - step * i));

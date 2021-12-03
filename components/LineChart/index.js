@@ -175,6 +175,7 @@ const LineChart = ({
       currIndex: renderedIndex,
       diff: 10,
       chartColumns,
+      chartType,
     });
     const [min, max] = limits;
     if (yAxisLimits.min !== min || yAxisLimits.max !== max) {
