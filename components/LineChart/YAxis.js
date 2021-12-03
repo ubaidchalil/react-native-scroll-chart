@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
+import PropTypes from 'prop-types';
 import Svg, {G, Line, Text as SvgText} from 'react-native-svg';
 import {
   MARGIN_FROM_LEFT,
@@ -29,7 +30,7 @@ const YAxis = ({yAxisLabelArray, containerHeight}) => {
             y1={yPoint}
             x2={yAxisX1Point - 6}
             y2={yPoint}
-            stroke={'#000'}
+            stroke="#000"
             strokeWidth="1"
           />
           <SvgText
@@ -69,6 +70,11 @@ const YAxis = ({yAxisLabelArray, containerHeight}) => {
 };
 
 export default React.memo(YAxis);
+
+YAxis.propTypes = {
+  yAxisLabelArray: PropTypes.array,
+  containerHeight: PropTypes.number,
+};
 
 const styles = StyleSheet.create({
   svgContainer: {

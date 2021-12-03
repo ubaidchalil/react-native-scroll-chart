@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {G, Line} from 'react-native-svg';
 
 const XAxis = ({
@@ -21,6 +22,14 @@ const XAxis = ({
       />
     </G>
   );
+};
+
+XAxis.propTypes = {
+  xAxisX1Point: PropTypes.number,
+  xAxisY1Point: PropTypes.number,
+  xAxisX2Point: PropTypes.number,
+  xAxisY2Point: PropTypes.number,
+  type: PropTypes.string,
 };
 
 export default React.memo(XAxis);

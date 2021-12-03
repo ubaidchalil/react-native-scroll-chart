@@ -59,9 +59,7 @@ export const getMaxAndMin = ({
     let dataIndex = (i + 1) % LENGTH_ONE_SECTION;
     dataIndex = dataIndex === 0 ? LENGTH_ONE_SECTION : dataIndex;
     dataIndex = dataArrayIndex > 1 ? dataIndex + 1 : dataIndex;
-    if (chartType === 'line') {
-      min = min;
-    }
+
     const {value, previousValue, nextValue} =
       dataList[dataArrayIndex - 1][dataIndex - 1];
 

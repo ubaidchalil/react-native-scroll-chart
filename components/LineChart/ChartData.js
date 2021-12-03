@@ -1,193 +1,18 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
-import Svg, {G, Path, Rect} from 'react-native-svg';
+import Svg, {G} from 'react-native-svg';
+import PropTypes from 'prop-types';
 import {
   MARGIN_FROM_TOP,
   MARGIN_FROM_RIGHT,
   MARGIN_FROM_BOTTOM,
-  LENGTH_ONE_SECTION,
   ROWS,
 } from './constants';
 import ChartElements from './ChartElements';
 import XAxis from './XAxis';
 import Tooltip from './Tooltip';
-
-const barWidthDiffPercentage = 0.38;
-
-const getPreviousDPath = ({
-  data,
-  chartData,
-  index,
-  itemWidth,
-  chartHeight,
-  yAxisLimits,
-  path,
-}) => {
-  const diffCurrentPrev =
-    Math.floor(data.dataIndex / LENGTH_ONE_SECTION) * LENGTH_ONE_SECTION -
-    data.prevValueIndex;
-  let finalDiff = diffCurrentPrev - 1;
-  if (index === chartData.length - 1) {
-    finalDiff = finalDiff - LENGTH_ONE_SECTION;
-  }
-
-  const lastX = -(finalDiff * itemWidth + itemWidth / 2);
-
-  const lastY =
-    MARGIN_FROM_TOP +
-    chartHeight -
-    ((data.previousValue - yAxisLimits.min) /
-      (yAxisLimits.max - yAxisLimits.min)) *
-      chartHeight;
-
-  path += `M${lastX} ${lastY}`;
-  return path;
-};
-
-const getNextDPath = ({data, itemWidth, chartHeight, yAxisLimits, path}) => {
-  let finalDiff =
-    data.nextValueIndex -
-    data.prevValueIndex +
-    (data.prevValueIndex % LENGTH_ONE_SECTION);
-  if (data.dataIndex - data.prevValueIndex > LENGTH_ONE_SECTION) {
-    finalDiff = data.nextValueIndex - data.dataIndex + LENGTH_ONE_SECTION;
-  }
-  if (data.dataIndex === LENGTH_ONE_SECTION) {
-    finalDiff = finalDiff - 1;
-  }
-  const nextX = finalDiff * itemWidth + itemWidth / 2;
-  const nextY =
-    MARGIN_FROM_TOP +
-    chartHeight -
-    ((data.nextValue - yAxisLimits.min) / (yAxisLimits.max - yAxisLimits.min)) *
-      chartHeight;
-
-  path += `L${nextX} ${nextY}`;
-  return path;
-};
-
-const getDPath = ({chartHeight, chartData, yAxisLimits, itemWidth}) => {
-  if (yAxisLimits.max === 0) {
-    return '';
-  }
-
-  let prefix = 'M';
-  const dPath = chartData.reduce((path, data, index) => {
-    const x = index * itemWidth + MARGIN_FROM_RIGHT + itemWidth / 2;
-    const y =
-      MARGIN_FROM_TOP +
-      chartHeight -
-      ((data.value - yAxisLimits.min) / (yAxisLimits.max - yAxisLimits.min)) *
-        chartHeight;
-
-    if (prefix === 'M' && data.value && data.prevValueIndex) {
-      path = getPreviousDPath({
-        data,
-        chartData,
-        index,
-        itemWidth,
-        chartHeight,
-        yAxisLimits,
-        path,
-      });
-      prefix = 'L';
-      if (data.value) {
-        path += `L${x} ${y}`;
-      }
-      return path;
-    }
-    if (index === chartData.length - 1 && data.nextValue && !data.value) {
-      if (prefix === 'M' && !data.value) {
-        path = getPreviousDPath({
-          data,
-          chartData,
-          index,
-          itemWidth,
-          chartHeight,
-          yAxisLimits,
-          path,
-        });
-        prefix = 'L';
-      }
-      path = getNextDPath({
-        data,
-        itemWidth,
-        chartHeight,
-        yAxisLimits,
-        path,
-      });
-
-      return path;
-    }
-
-    if (!data.value) {
-      return path;
-    }
-
-    path += `${prefix}${x} ${y}`;
-
-    prefix = 'L';
-
-    return path;
-  }, '');
-  return dPath;
-};
-
-const LineChart = ({chartHeight, chartData, yAxisLimits, itemWidth}) => {
-  const dPath = useMemo(
-    () =>
-      getDPath({
-        chartHeight,
-        chartData,
-        yAxisLimits,
-        itemWidth,
-      }),
-    [chartHeight, chartData, yAxisLimits, itemWidth],
-  );
-  return <Path d={dPath} stroke="#000" strokeWidth={1.5} fill="none" />;
-};
-
-const BarChart = ({
-  chartHeight,
-  chartData,
-  yAxisLimits,
-  itemWidth,
-  toolTipHandler,
-}) => {
-  const diff = itemWidth * barWidthDiffPercentage;
-  return chartData.map((data, index) => {
-    const dataXPoint =
-      yAxisLimits.max === 0 ? 0 : index * itemWidth + MARGIN_FROM_RIGHT;
-    const dataYPoint =
-      yAxisLimits.max === 0
-        ? 0
-        : MARGIN_FROM_TOP +
-          chartHeight -
-          ((data.value - yAxisLimits.min) /
-            (yAxisLimits.max - yAxisLimits.min)) *
-            chartHeight;
-    let height = chartHeight + MARGIN_FROM_TOP - dataYPoint;
-    height = data.value ? height : 0;
-
-    return (
-      <Rect
-        x={dataXPoint + diff / 2}
-        y={dataYPoint}
-        width={itemWidth - diff}
-        height={height}
-        fill="#000"
-        onPress={() =>
-          toolTipHandler({
-            xPosition: dataXPoint + itemWidth / 2,
-            yPosition: dataYPoint,
-            selectedIndex: data.dataIndex,
-            data,
-          })
-        }
-      />
-    );
-  });
-};
+import LineChart from './LineChart';
+import BarChart from './BarChart';
 
 const Chart = ({
   containerHeight,
@@ -229,12 +54,10 @@ const Chart = ({
 
   React.useEffect(() => {
     setTooltipState({...tooltipState, isVisible: false});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [left]);
 
   React.useEffect(() => {
     setTooltipState({...tooltipState, isVisible: false});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [yAxisLimits]);
 
   const renderYAxisLines = () => {
@@ -245,6 +68,7 @@ const Chart = ({
       const yPoint = yAxisY1Point + gapBetweenYAxis * index;
       return (
         <XAxis
+          key={`x-axisLine-${index}`}
           {...{
             xAxisX1Point,
             xAxisY1Point: yPoint,
@@ -266,7 +90,6 @@ const Chart = ({
       ]}>
       <G>
         {renderYAxisLines()}
-
         {chartType === 'line' && (
           <LineChart
             {...{
@@ -315,6 +138,20 @@ const Chart = ({
       </G>
     </Svg>
   );
+};
+
+Chart.propTypes = {
+  containerHeight: PropTypes.number,
+  chartData: PropTypes.object,
+  yAxisLimits: PropTypes.object,
+  left: PropTypes.number,
+  itemWidth: PropTypes.number,
+  setTooltipDisplayed: PropTypes.func,
+  chartKey: PropTypes.string,
+  sectionIndex: PropTypes.number,
+  backgroundColor: PropTypes.string,
+  toolTipCallBackFunction: PropTypes.func,
+  chartType: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

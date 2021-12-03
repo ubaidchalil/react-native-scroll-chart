@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {G, Line, Rect, Circle, Text as SvgText} from 'react-native-svg';
 import {MARGIN_FROM_BOTTOM, MARGIN_FROM_TOP} from './constants';
 
@@ -69,6 +70,16 @@ const Tooltip = ({
       />
     </G>
   );
+};
+
+Tooltip.propTypes = {
+  xPosition: PropTypes.number,
+  yPosition: PropTypes.number,
+  selectedIndex: PropTypes.number,
+  containerHeight: PropTypes.number,
+  titleField: PropTypes.string,
+  dataField: PropTypes.string,
+  chartType: PropTypes.string,
 };
 
 export default React.memo(Tooltip);

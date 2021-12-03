@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import PropTypes from 'prop-types';
 import {StyleSheet, View} from 'react-native';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -24,7 +25,7 @@ import {getMaxAndMin, getYAxisLabel} from './utils';
 
 const CHART_SECTIONS = ['chart1', 'chart2', 'chart3'];
 
-const LineChart = ({
+const ScrollableChart = ({
   chartData,
   containerHeight,
   dataCount,
@@ -73,7 +74,6 @@ const LineChart = ({
         setRenderedIndex(chartColumns);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartData]);
 
   const [yAxisLabelArray, setYAxisLabelArray] = useState([]);
@@ -116,7 +116,6 @@ const LineChart = ({
         },
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemWidth]);
 
   const MAX_TRANSLATE_X = -(itemWidth * dataCount);
@@ -150,7 +149,7 @@ const LineChart = ({
     let mod = nextSection % 3;
     mod = mod === 0 ? 3 : mod;
 
-    let chartSection = CHART_SECTIONS[mod - 1];
+    const chartSection = CHART_SECTIONS[mod - 1];
 
     setChartDataState({
       ...chartDataState,
@@ -161,8 +160,6 @@ const LineChart = ({
         sectionIndex: nextSection,
       },
     });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartState]);
 
   useEffect(() => {
@@ -184,7 +181,6 @@ const LineChart = ({
     const _yAxisLabelArray = getYAxisLabel(max, min);
     setYAxisLabelArray(_yAxisLabelArray);
     getChartDatesAndAverage(renderedIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [renderedIndex, chartData]);
 
   const clampedTranslateX = useDerivedValue(() => {
@@ -345,7 +341,17 @@ const LineChart = ({
   );
 };
 
-export default LineChart;
+export default ScrollableChart;
+
+ScrollableChart.propTypes = {
+  containerHeight: PropTypes.number,
+  chartData: PropTypes.object,
+  dataCount: PropTypes.number,
+  chartColumns: PropTypes.number,
+  getChartDatesAndAverage: PropTypes.func,
+  toolTipCallBackFunction: PropTypes.func,
+  chartType: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
   svgWrapper: {

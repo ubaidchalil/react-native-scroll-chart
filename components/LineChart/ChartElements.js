@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {G, Line, Text as SvgText, Circle, Rect} from 'react-native-svg';
 import {MARGIN_FROM_TOP, MARGIN_FROM_RIGHT} from './constants';
 
@@ -78,7 +79,7 @@ const ChartElements = ({
           y1={xAxisY1Point}
           x2={xAxisX1Point + itemWidth * index}
           y2={xAxisY1Point + 6}
-          stroke={'#000'}
+          stroke="#000"
           strokeWidth={1}
         />
 
@@ -94,6 +95,18 @@ const ChartElements = ({
       </G>
     );
   });
+};
+
+ChartElements.propTypes = {
+  chartHeight: PropTypes.number,
+  chartData: PropTypes.object,
+  yAxisLimits: PropTypes.object,
+  itemWidth: PropTypes.number,
+  toolTipHandler: PropTypes.func,
+  xAxisX1Point: PropTypes.number,
+  xAxisY1Point: PropTypes.number,
+  onCircle: PropTypes.func,
+  chartType: PropTypes.string,
 };
 
 export default React.memo(ChartElements);
