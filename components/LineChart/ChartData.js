@@ -192,11 +192,11 @@ const Chart = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [yAxisLimits]);
 
-  const renderYAxisLabels = () => {
+  const renderYAxisLines = () => {
     const gapBetweenYAxis =
       (containerHeight - MARGIN_FROM_BOTTOM - MARGIN_FROM_TOP) / (ROWS - 1);
     const yAxisY1Point = MARGIN_FROM_TOP;
-    return [...new Array(4)].map((_, index) => {
+    return [...new Array(ROWS)].map((_, index) => {
       const yPoint = yAxisY1Point + gapBetweenYAxis * index;
       return (
         <XAxis
@@ -240,7 +240,7 @@ const Chart = ({
             onCircle,
           }}
         />
-        {renderYAxisLabels()}
+        {renderYAxisLines()}
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
         {tooltipState.isVisible && (
           <Tooltip
