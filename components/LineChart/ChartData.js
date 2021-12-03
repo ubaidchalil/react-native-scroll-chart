@@ -220,6 +220,7 @@ const Chart = ({
         {left, backgroundColor},
       ]}>
       <G>
+        {renderYAxisLines()}
         <LineChart
           {...{
             chartHeight,
@@ -240,7 +241,7 @@ const Chart = ({
             onCircle,
           }}
         />
-        {renderYAxisLines()}
+
         <XAxis {...{xAxisX1Point, xAxisY1Point, xAxisX2Point, xAxisY2Point}} />
         {tooltipState.isVisible && (
           <Tooltip

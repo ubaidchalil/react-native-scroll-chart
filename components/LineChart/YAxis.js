@@ -17,8 +17,10 @@ const YAxis = ({yAxisLabelArray, containerHeight}) => {
     (containerHeight - MARGIN_FROM_BOTTOM - MARGIN_FROM_TOP) / (ROWS - 1);
 
   const renderYAxisLabels = () => {
-    return yAxisLabelArray.map((item, index) => {
+    return yAxisLabelArray.map((label, index) => {
       const yPoint = yAxisY1Point + gapBetweenYAxis * index;
+      const labelLength = `${label}`.length;
+      const diff = labelLength * 3;
       return (
         <G key={`y-axis-${index}`}>
           <Line
@@ -31,11 +33,12 @@ const YAxis = ({yAxisLabelArray, containerHeight}) => {
             strokeWidth="1"
           />
           <SvgText
-            y={yPoint + 5}
-            x={yAxisX1Point - 25}
+            y={yPoint + 3}
+            x={yAxisX1Point - (8 + diff)}
             textAnchor="middle"
+            fontSize={10}
             fill="#000">
-            {item}
+            {label}
           </SvgText>
         </G>
       );

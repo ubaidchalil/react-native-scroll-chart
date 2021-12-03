@@ -172,7 +172,7 @@ const LineChart = ({
     const limits = getMaxAndMin({
       dataList: chartData,
       currIndex: renderedIndex,
-      diff: 5,
+      diff: 10,
       chartColumns,
     });
     const [min, max] = limits;

@@ -6,7 +6,7 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
 import LineChart from './components/LineChart';
 import {getData2, getDatesAndAverage} from './components/LineChart/utils';
-import {API_MOCK_DATA} from './data';
+import {API_MOCK_DATA, API_MOCK_DATA_STEPS} from './data';
 
 export default function ScrollableLineChart() {
   const [chartData, setChartData] = React.useState([]);

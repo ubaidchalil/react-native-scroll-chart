@@ -83,8 +83,9 @@ const ChartElements = ({
         <SvgText
           transform="scale(-1,1)"
           x={-(xPoint + itemWidth / 2)}
-          y={xAxisY1Point + 20}
+          y={xAxisY1Point + 15}
           textAnchor="middle"
+          fontSize={10}
           fill="#000">
           {item.label}
         </SvgText>
